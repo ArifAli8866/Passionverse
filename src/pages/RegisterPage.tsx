@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/store/auth";
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { Flame, Mail, Lock, User, Eye, EyeOff, UserRound } from "lucide-react";
 import { HOBBIES } from "@/lib/utils";
-import type { User as UserType } from "@/types";
+import { supabase } from "@/lib/supabase";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
-  const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -33,18 +33,23 @@ export default function RegisterPage() {
     const newErrors: Record<string, string> = {};
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!formData.username.trim()) newErrors.username = "Username is required";
-    else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) newErrors.username = "Only letters, numbers, and underscores";
+    else if (!/^[a-zA-Z0-9_]+$/.test(formData.username))
+      newErrors.username = "Only letters, numbers, and underscores";
     if (!formData.email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Invalid email format";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Invalid email format";
     if (!formData.password) newErrors.password = "Password is required";
-    else if (formData.password.length < 8) newErrors.password = "At least 8 characters";
+    else if (formData.password.length < 8)
+      newErrors.password = "At least 8 characters";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const toggleHobby = (hobbyId: string) => {
     setSelectedHobbies((prev) =>
-      prev.includes(hobbyId) ? prev.filter((h) => h !== hobbyId) : [...prev, hobbyId]
+      prev.includes(hobbyId)
+        ? prev.filter((h) => h !== hobbyId)
+        : [...prev, hobbyId]
     );
   };
 
@@ -56,24 +61,55 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
-      const newUser: UserType = {
-        id: "currentUser",
-        fullName: formData.fullName,
-        username: formData.username,
-        avatar: "",
-        bio: "",
-        location: "",
-        website: "",
-        hobbies: selectedHobbies,
-        followers: 0,
-        following: 0,
-        posts: 0,
-      };
-      login(newUser);
+    try {
+      // Register with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.fullName,
+            username: formData.username,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Update profile with username and full name
+        await supabase
+          .from("profiles")
+          .update({
+            full_name: formData.fullName,
+            username: formData.username,
+          })
+          .eq("id", data.user.id);
+
+        toast.success("Account created! Please check your email to verify.");
+        navigate("/login");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Registration failed");
+    } finally {
       setIsLoading(false);
-      navigate("/feed");
-    }, 1000);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setGoogleLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/feed`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || "Google signup failed");
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -89,21 +125,21 @@ export default function RegisterPage() {
             {step === 1 ? "Create Account" : "Choose Your Interests"}
           </h1>
           <p className="mt-1 text-gray-500 dark:text-gray-400">
-            {step === 1 ? "Join the PassionVerse community" : "Select hobbies you're passionate about"}
+            {step === 1
+              ? "Join the PassionVerse community"
+              : "Select hobbies you're passionate about"}
           </p>
         </div>
 
         {/* Steps Indicator */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-            step >= 1 ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"
-          }`}>1</div>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${step >= 1 ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"
+            }`}>1</div>
           <div className="w-12 h-0.5 bg-gray-200 dark:bg-gray-700">
             <div className={`h-full bg-indigo-600 transition-all ${step >= 2 ? "w-full" : "w-0"}`} />
           </div>
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
-            step >= 2 ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"
-          }`}>2</div>
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${step >= 2 ? "bg-indigo-600 text-white" : "bg-gray-200 text-gray-500"
+            }`}>2</div>
         </div>
 
         <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -158,10 +194,19 @@ export default function RegisterPage() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
-                <Button type="submit" variant="primary" size="lg" className="w-full">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                >
                   Next Step
                 </Button>
               </>
@@ -173,11 +218,10 @@ export default function RegisterPage() {
                       key={hobby.id}
                       type="button"
                       onClick={() => toggleHobby(hobby.id)}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                        selectedHobbies.includes(hobby.id)
-                          ? "bg-indigo-50 text-indigo-700 border-2 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700"
-                          : "bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                      }`}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${selectedHobbies.includes(hobby.id)
+                        ? "bg-indigo-50 text-indigo-700 border-2 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700"
+                        : "bg-gray-50 text-gray-700 border-2 border-transparent hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                        }`}
                     >
                       {hobby.name}
                     </button>
@@ -194,7 +238,13 @@ export default function RegisterPage() {
                   >
                     Back
                   </button>
-                  <Button type="submit" variant="primary" size="lg" className="flex-1" isLoading={isLoading}>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    className="flex-1"
+                    isLoading={isLoading}
+                  >
                     Create Account
                   </Button>
                 </div>
@@ -210,22 +260,33 @@ export default function RegisterPage() {
                     <div className="w-full border-t border-gray-200 dark:border-gray-700" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="bg-white dark:bg-gray-900 px-2 text-gray-500">Or continue with</span>
+                    <span className="bg-white dark:bg-gray-900 px-2 text-gray-500">
+                      Or continue with
+                    </span>
                   </div>
                 </div>
-                <button className="mt-4 w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
+
+                <button
+                  onClick={handleGoogleSignup}
+                  disabled={googleLoading}
+                  className="mt-4 w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
-                  Sign up with Google
+                  {googleLoading ? "Redirecting..." : "Sign up with Google"}
                 </button>
               </div>
+
               <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                <Link
+                  to="/login"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium"
+                >
                   Sign in
                 </Link>
               </p>
