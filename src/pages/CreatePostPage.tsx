@@ -1,3 +1,5 @@
+import { supabase } from "@/lib/supabase";
+import toast from "react-hot-toast";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/store/auth";
@@ -24,12 +26,41 @@ export default function CreatePostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+    if (!content.trim() && postType !== "image") {
+      toast.error("Please write something!");
+      return;
+    }
     setIsSubmitting(true);
-    // Simulate post creation
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const postData: any = {
+        user_id: user.id,
+        type: postType,
+        content: content.trim(),
+      };
+
+      if (postType === "image") {
+        postData.caption = caption;
+      }
+
+      if (postType === "project") {
+        postData.project_title = projectTitle;
+        postData.project_description = projectDescription;
+        postData.github_link = githubLink || null;
+        postData.demo_link = demoLink || null;
+      }
+
+      const { error } = await supabase.from("posts").insert(postData);
+
+      if (error) throw error;
+
+      toast.success("Post published successfully!");
       navigate("/feed");
-    }, 1000);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to publish post");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const postTypes = [
@@ -97,8 +128,8 @@ export default function CreatePostPage() {
                 postType === "text"
                   ? "What's on your mind? Share your thoughts, ideas, or experiences..."
                   : postType === "image"
-                  ? "Describe your image and what it means to you..."
-                  : "Tell us about your project..."
+                    ? "Describe your image and what it means to you..."
+                    : "Tell us about your project..."
               }
               rows={5}
               className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-indigo-400"
