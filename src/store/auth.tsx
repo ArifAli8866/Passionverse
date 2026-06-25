@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
 import type { User } from "@/types";
+import { supabase } from "@/lib/supabase";
 
 interface AuthState {
   user: User | null;
@@ -46,36 +47,73 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    const stored = localStorage.getItem("passionverse_user");
-    if (stored) {
-      try {
-        const user = JSON.parse(stored);
-        dispatch({ type: "LOGIN", payload: user });
-      } catch {
-        localStorage.removeItem("passionverse_user");
+    // Check active session on load
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        await loadUserProfile(session.user.id);
+      } else {
         dispatch({ type: "SET_LOADING", payload: false });
       }
-    } else {
-      dispatch({ type: "SET_LOADING", payload: false });
-    }
+    });
+
+    // Listen for auth changes (Google redirect, login, logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          await loadUserProfile(session.user.id);
+        } else {
+          dispatch({ type: "LOGOUT" });
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
+  const loadUserProfile = async (userId: string) => {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (profile) {
+        dispatch({
+          type: "LOGIN",
+          payload: {
+            id: profile.id,
+            fullName: profile.full_name,
+            username: profile.username,
+            avatar: profile.avatar_url || "",
+            bio: profile.bio || "",
+            location: profile.location || "",
+            website: profile.website || "",
+            hobbies: [],
+            followers: 0,
+            following: 0,
+            posts: 0,
+          },
+        });
+      } else {
+        dispatch({ type: "SET_LOADING", payload: false });
+      }
+    } catch {
+      dispatch({ type: "SET_LOADING", payload: false });
+    }
+  };
+
   const login = (user: User) => {
-    localStorage.setItem("passionverse_user", JSON.stringify(user));
     dispatch({ type: "LOGIN", payload: user });
   };
 
-  const logout = () => {
-    localStorage.removeItem("passionverse_user");
+  const logout = async () => {
+    await supabase.auth.signOut();
     dispatch({ type: "LOGOUT" });
   };
 
   const updateUser = (data: Partial<User>) => {
-    if (state.user) {
-      const updated = { ...state.user, ...data };
-      localStorage.setItem("passionverse_user", JSON.stringify(updated));
-      dispatch({ type: "UPDATE_USER", payload: data });
-    }
+    dispatch({ type: "UPDATE_USER", payload: data });
   };
 
   return (
