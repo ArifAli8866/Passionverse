@@ -38,7 +38,6 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       setIsLoading(true);
       try {
-        // Get profile
         const { data: profile, error } = await supabase
           .from("profiles")
           .select("*")
@@ -48,21 +47,18 @@ export default function ProfilePage() {
         if (error) throw error;
         setProfileUser(profile);
 
-        // Get followers count
         const { count: fCount } = await supabase
           .from("followers")
           .select("*", { count: "exact", head: true })
           .eq("following_id", profile.id);
         setFollowersCount(fCount || 0);
 
-        // Get following count
         const { count: fgCount } = await supabase
           .from("followers")
           .select("*", { count: "exact", head: true })
           .eq("follower_id", profile.id);
         setFollowingCount(fgCount || 0);
 
-        // Check if current user follows this profile
         if (currentUser && !isOwnProfile) {
           const { data: followData } = await supabase
             .from("followers")
@@ -73,17 +69,9 @@ export default function ProfilePage() {
           setIsFollowing(!!followData);
         }
 
-        // Get posts
         const { data: posts } = await supabase
           .from("posts")
-          .select(`
-            *,
-            profiles:user_id (
-              id, full_name, username, avatar_url
-            ),
-            post_likes (user_id),
-            comments (id)
-          `)
+          .select("*, profiles:user_id (id, full_name, username, avatar_url), post_likes (user_id), comments (id)")
           .eq("user_id", profile.id)
           .order("created_at", { ascending: false });
 
@@ -100,9 +88,7 @@ export default function ProfilePage() {
           createdAt: post.created_at,
           likesCount: post.post_likes?.length || 0,
           commentsCount: post.comments?.length || 0,
-          isLiked: post.post_likes?.some(
-            (like: any) => like.user_id === currentUser?.id
-          ) || false,
+          isLiked: post.post_likes?.some((like: any) => like.user_id === currentUser?.id) || false,
           user: {
             id: post.profiles?.id,
             fullName: post.profiles?.full_name,
@@ -167,13 +153,9 @@ export default function ProfilePage() {
     return (
       <AppLayout>
         <div className="text-center py-20">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            User not found
-          </h2>
-          <p className="text-gray-500 mt-2">This user doesn't exist.</p>
-          <Link to="/feed" className="mt-4 inline-block text-indigo-600">
-            Go back to feed
-          </Link>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User not found</h2>
+          <p className="text-gray-500 mt-2">This user does not exist.</p>
+          <Link to="/feed" className="mt-4 inline-block text-indigo-600">Go back to feed</Link>
         </div>
       </AppLayout>
     );
@@ -182,7 +164,6 @@ export default function ProfilePage() {
   return (
     <AppLayout>
       <div className="max-w-2xl mx-auto">
-        {/* Cover */}
         <div className="relative h-48 sm:h-56 rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600">
           <div className="absolute inset-0 bg-black/10" />
           <div className="absolute bottom-4 right-4">
@@ -196,14 +177,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Profile Info */}
         <div className="relative px-4 sm:px-6 -mt-14">
           <div className="flex items-end gap-4">
-            <Avatar
-              name={profileUser.full_name}
-              size="xl"
-              className="ring-4 ring-white dark:ring-gray-950"
-            />
+            <Avatar name={profileUser.full_name} size="xl" className="ring-4 ring-white dark:ring-gray-950" />
             <div className="flex-1 pb-2">
               <div className="flex items-start justify-between">
                 <div>
@@ -213,11 +189,7 @@ export default function ProfilePage() {
                   <p className="text-sm text-gray-500">@{profileUser.username}</p>
                 </div>
                 {!isOwnProfile && (
-                  <Button
-                    variant={isFollowing ? "outline" : "primary"}
-                    size="sm"
-                    onClick={handleFollow}
-                  >
+                  <Button variant={isFollowing ? "outline" : "primary"} size="sm" onClick={handleFollow}>
                     {isFollowing ? (
                       <><UserCheck className="w-4 h-4" /> Following</>
                     ) : (
@@ -229,12 +201,9 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Bio */}
           <div className="mt-4 space-y-3">
             {profileUser.bio && (
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                {profileUser.bio}
-              </p>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{profileUser.bio}</p>
             )}
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
               {profileUser.location && (
@@ -243,84 +212,65 @@ export default function ProfilePage() {
                 </span>
               )}
               {profileUser.website && (
-
-                href = { profileUser.website }
-                  target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-indigo-600 hover:underline"
-                >
-              <LinkIcon className="w-4 h-4" />
-              {profileUser.website.replace(/https?:\/\//, "")}
-            </a>
+                <a href={profileUser.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-indigo-600 hover:underline">
+                  <LinkIcon className="w-4 h-4" />
+                  {profileUser.website.replace(/https?:\/\//, "")}
+                </a>
               )}
-            <span className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              Joined {new Date(profileUser.created_at).getFullYear()}
-            </span>
-            <span className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              {formatCount(followersCount)} followers
-            </span>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-          <div className="text-center">
-            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {formatCount(userPosts.length)}
-            </p>
-            <p className="text-xs text-gray-500">Posts</p>
-          </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {formatCount(followersCount)}
-            </p>
-            <p className="text-xs text-gray-500">Followers</p>
-          </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              {formatCount(followingCount)}
-            </p>
-            <p className="text-xs text-gray-500">Following</p>
-          </div>
-        </div>
-
-        {/* Posts */}
-        <div className="mt-6 flex items-center gap-1 border-b border-gray-100 dark:border-gray-800">
-          <button className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 border-indigo-600 text-indigo-600">
-            <Grid className="w-4 h-4" /> Posts
-          </button>
-        </div>
-
-        <div className="mt-4 space-y-4">
-          {userPosts.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 mb-4">
-                <Image className="h-8 w-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                No posts yet
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {isOwnProfile
-                  ? "Share your first passion project!"
-                  : "This user hasn't posted anything yet."}
-              </p>
-              {isOwnProfile && (
-                <Link to="/create-post">
-                  <Button variant="primary" size="sm" className="mt-4">
-                    Create Post
-                  </Button>
-                </Link>
-              )}
+              <span className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                Joined {new Date(profileUser.created_at).getFullYear()}
+              </span>
+              <span className="flex items-center gap-1">
+                <Users className="w-4 h-4" />
+                {formatCount(followersCount)} followers
+              </span>
             </div>
-          ) : (
-            userPosts.map((post) => <PostCard key={post.id} post={post} />)
-          )}
+          </div>
+
+          <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
+            <div className="text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCount(userPosts.length)}</p>
+              <p className="text-xs text-gray-500">Posts</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCount(followersCount)}</p>
+              <p className="text-xs text-gray-500">Followers</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCount(followingCount)}</p>
+              <p className="text-xs text-gray-500">Following</p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex items-center gap-1 border-b border-gray-100 dark:border-gray-800">
+            <button className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 border-indigo-600 text-indigo-600">
+              <Grid className="w-4 h-4" /> Posts
+            </button>
+          </div>
+
+          <div className="mt-4 space-y-4">
+            {userPosts.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 mb-4">
+                  <Image className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">No posts yet</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {isOwnProfile ? "Share your first passion project!" : "This user has not posted anything yet."}
+                </p>
+                {isOwnProfile && (
+                  <Link to="/create-post">
+                    <Button variant="primary" size="sm" className="mt-4">Create Post</Button>
+                  </Link>
+                )}
+              </div>
+            ) : (
+              userPosts.map((post) => <PostCard key={post.id} post={post} />)
+            )}
+          </div>
         </div>
       </div>
-    </div>
-    </AppLayout >
+    </AppLayout>
   );
 }
