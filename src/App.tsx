@@ -1,135 +1,112 @@
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from "react";
-import type { User } from "@/types";
-import { supabase } from "@/lib/supabase";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/store/auth";
+import { ThemeProvider } from "@/store/theme";
+import LandingPage from "@/pages/LandingPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import FeedPage from "@/pages/FeedPage";
+import ProfilePage from "@/pages/ProfilePage";
+import DiscoverPage from "@/pages/DiscoverPage";
+import MessagesPage from "@/pages/MessagesPage";
+import NotificationsPage from "@/pages/NotificationsPage";
+import CreatePostPage from "@/pages/CreatePostPage";
+import SearchPage from "@/pages/SearchPage";
+import DashboardPage from "@/pages/DashboardPage";
+import SettingsPage from "@/pages/SettingsPage";
+import SavedPostsPage from "@/pages/SavedPostsPage";
+import { Toaster } from "react-hot-toast";
 
-interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-type AuthAction =
-  | { type: "LOGIN"; payload: User }
-  | { type: "LOGOUT" }
-  | { type: "SET_LOADING"; payload: boolean }
-  | { type: "UPDATE_USER"; payload: Partial<User> };
-
-const initialState: AuthState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-};
-
-function authReducer(state: AuthState, action: AuthAction): AuthState {
-  switch (action.type) {
-    case "LOGIN":
-      return { ...state, user: action.payload, isAuthenticated: true, isLoading: false };
-    case "LOGOUT":
-      return { ...state, user: null, isAuthenticated: false, isLoading: false };
-    case "SET_LOADING":
-      return { ...state, isLoading: action.payload };
-    case "UPDATE_USER":
-      return { ...state, user: state.user ? { ...state.user, ...action.payload } : null };
-    default:
-      return state;
-  }
-}
-
-interface AuthContextType extends AuthState {
-  login: (user: User) => void;
-  logout: () => void;
-  updateUser: (data: Partial<User>) => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(authReducer, initialState);
-
-  const loadUserProfile = async (userId: string) => {
-    try {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      if (profile) {
-        dispatch({
-          type: "LOGIN",
-          payload: {
-            id: profile.id,
-            fullName: profile.full_name,
-            username: profile.username,
-            avatar: profile.avatar_url || "",
-            bio: profile.bio || "",
-            location: profile.location || "",
-            website: profile.website || "",
-            hobbies: [],
-            followers: 0,
-            following: 0,
-            posts: 0,
-          },
-        });
-      } else {
-        dispatch({ type: "LOGOUT" });
-      }
-    } catch {
-      dispatch({ type: "LOGOUT" });
-    }
-  };
-
-  useEffect(() => {
-    // Keep isLoading true until we confirm session
-    dispatch({ type: "SET_LOADING", payload: true });
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        await loadUserProfile(session.user.id);
-      } else {
-        dispatch({ type: "LOGOUT" });
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === "SIGNED_IN" && session?.user) {
-          await loadUserProfile(session.user.id);
-        } else if (event === "SIGNED_OUT") {
-          dispatch({ type: "LOGOUT" });
-        } else if (event === "TOKEN_REFRESHED" && session?.user) {
-          await loadUserProfile(session.user.id);
-        }
-      }
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-200">
+            <svg className="h-6 w-6 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500">Loading PassionVerse...</p>
+        </div>
+      </div>
     );
+  }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return <>{children}</>;
+}
 
-    return () => subscription.unsubscribe();
-  }, []);
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-200">
+            <svg className="h-6 w-6 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  if (isAuthenticated) {
+    return <Navigate to="/feed" replace />;
+  }
+  return <>{children}</>;
+}
 
-  const login = (user: User) => {
-    dispatch({ type: "LOGIN", payload: user });
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    dispatch({ type: "LOGOUT" });
-  };
-
-  const updateUser = (data: Partial<User>) => {
-    dispatch({ type: "UPDATE_USER", payload: data });
-  };
-
+function AppRoutes() {
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, updateUser }}>
-      {children}
-    </AuthContext.Provider>
+    <Routes>
+      <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+      <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+      <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+      <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+      <Route path="/feed" element={<ProtectedRoute><FeedPage /></ProtectedRoute>} />
+      <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+      <Route path="/discover" element={<ProtectedRoute><DiscoverPage /></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+      <Route path="/create-post" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
+      <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      <Route path="/saved" element={<ProtectedRoute><SavedPostsPage /></ProtectedRoute>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                borderRadius: "12px",
+                background: "#1f2937",
+                color: "#f9fafb",
+                fontSize: "14px",
+              },
+            }}
+          />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  );
 }
