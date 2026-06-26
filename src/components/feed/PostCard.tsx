@@ -4,6 +4,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/ui/button";
 import { cn, formatDate, formatCount } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/store/auth";
 import type { Post, Comment } from "@/types";
 import {
   Heart,
@@ -15,6 +17,7 @@ import {
   Flag,
   ExternalLink,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface PostCardProps {
   post: Post;
@@ -23,6 +26,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, onLike, onSave }: PostCardProps) {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [likesCount, setLikesCount] = useState(post.likesCount || 0);
@@ -32,47 +36,96 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
 
-
-  const handleLike = () => {
-    if (isLiked) {
-      setIsLiked(false);
-      setLikesCount((prev) => prev - 1);
-    } else {
-      setIsLiked(true);
-      setLikesCount((prev) => prev + 1);
+  const handleLike = async () => {
+    if (!user) return;
+    try {
+      if (isLiked) {
+        await supabase
+          .from("post_likes")
+          .delete()
+          .eq("post_id", post.id)
+          .eq("user_id", user.id);
+        setIsLiked(false);
+        setLikesCount((prev) => prev - 1);
+      } else {
+        await supabase.from("post_likes").insert({
+          post_id: post.id,
+          user_id: user.id,
+        });
+        setIsLiked(true);
+        setLikesCount((prev) => prev + 1);
+      }
+      onLike?.(post.id);
+    } catch (error: any) {
+      toast.error("Failed to update like");
     }
-    onLike?.(post.id);
   };
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-    onSave?.(post.id);
+  const handleSave = async () => {
+    if (!user) return;
+    try {
+      if (isSaved) {
+        await supabase
+          .from("saved_posts")
+          .delete()
+          .eq("post_id", post.id)
+          .eq("user_id", user.id);
+        setIsSaved(false);
+        toast.success("Post removed from saved");
+      } else {
+        await supabase.from("saved_posts").insert({
+          post_id: post.id,
+          user_id: user.id,
+        });
+        setIsSaved(true);
+        toast.success("Post saved!");
+      }
+      onSave?.(post.id);
+    } catch (error: any) {
+      toast.error("Failed to save post");
+    }
   };
 
-  const handleComment = () => {
-    if (!commentText.trim()) return;
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      postId: post.id,
-      userId: "currentUser",
-      content: commentText,
-      createdAt: new Date().toISOString(),
-      user: {
-        id: "currentUser",
-        fullName: "You",
-        username: "you",
-        avatar: "",
-        bio: "",
-        location: "",
-        website: "",
-        hobbies: [],
-        followers: 0,
-        following: 0,
-        posts: 0,
-      },
-    };
-    setComments((prev) => [...prev, newComment]);
-    setCommentText("");
+  const handleComment = async () => {
+    if (!commentText.trim() || !user) return;
+    try {
+      const { data, error } = await supabase
+        .from("comments")
+        .insert({
+          post_id: post.id,
+          user_id: user.id,
+          content: commentText.trim(),
+        })
+        .select("*, profiles:user_id (id, full_name, username, avatar_url)")
+        .single();
+
+      if (error) throw error;
+
+      const newComment: Comment = {
+        id: data.id,
+        postId: data.post_id,
+        userId: data.user_id,
+        content: data.content,
+        createdAt: data.created_at,
+        user: {
+          id: data.profiles?.id,
+          fullName: data.profiles?.full_name,
+          username: data.profiles?.username,
+          avatar: data.profiles?.avatar_url || "",
+          bio: "",
+          location: "",
+          website: "",
+          hobbies: [],
+          followers: 0,
+          following: 0,
+          posts: 0,
+        },
+      };
+      setComments((prev) => [...prev, newComment]);
+      setCommentText("");
+    } catch (error: any) {
+      toast.error("Failed to post comment");
+    }
   };
 
   const placeholderColors = [
@@ -128,7 +181,6 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
             🚀 Project Showcase
           </div>
         )}
-        {/* For text posts with markdown-like formatting */}
         <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line">
           {post.content}
         </div>
@@ -137,29 +189,29 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       {/* Post Image */}
       {post.type !== "text" && (
         <div
-          className={cn(
-            "mx-5 mb-3 rounded-xl overflow-hidden bg-gradient-to-br",
-            placeholderColor
-          )}
+          className={cn("mx-5 mb-3 rounded-xl overflow-hidden bg-gradient-to-br", placeholderColor)}
           style={{ aspectRatio: "16/9", maxHeight: "400px" }}
         >
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="text-center text-white/80 p-8">
-              {post.type === "image" ? (
-                <>
-                  <div className="text-4xl mb-2">📸</div>
-                  <p className="text-sm font-medium">{post.caption || "Post Image"}</p>
-                  <p className="text-xs mt-1 opacity-70">Click to view full image</p>
-                </>
-              ) : (
-                <>
-                  <div className="text-4xl mb-2">🚀</div>
-                  <p className="text-lg font-bold">{post.projectTitle}</p>
-                  <p className="text-sm mt-1 opacity-80 line-clamp-2">{post.projectDescription}</p>
-                </>
-              )}
+          {post.imageUrl ? (
+            <img src={post.imageUrl} alt="Post" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center text-white/80 p-8">
+                {post.type === "image" ? (
+                  <>
+                    <div className="text-4xl mb-2">📸</div>
+                    <p className="text-sm font-medium">{post.caption || "Post Image"}</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-4xl mb-2">🚀</div>
+                    <p className="text-lg font-bold">{post.projectTitle}</p>
+                    <p className="text-sm mt-1 opacity-80 line-clamp-2">{post.projectDescription}</p>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -167,22 +219,14 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       {post.type === "project" && (
         <div className="px-5 pb-3 flex flex-wrap gap-2">
           {post.githubLink && (
-            <a
-              href={post.githubLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
-            >
+            <a href={post.githubLink} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg> GitHub
             </a>
           )}
           {post.demoLink && (
-            <a
-              href={post.demoLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50 transition-colors"
-            >
+            <a href={post.demoLink} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50 transition-colors">
               <ExternalLink className="w-3.5 h-3.5" /> Live Demo
             </a>
           )}
@@ -193,48 +237,28 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       <div className="flex items-center gap-4 px-5 py-2 border-t border-gray-50 dark:border-gray-800">
         <span className="text-xs text-gray-400">{formatCount(likesCount)} likes</span>
         <span className="text-xs text-gray-400">{formatCount((post.commentsCount || 0) + comments.length)} comments</span>
-        <span className="text-xs text-gray-400">{formatCount(0)} shares</span>
       </div>
 
       {/* Action Buttons */}
       <div className="flex items-center justify-between px-5 py-2 border-t border-gray-50 dark:border-gray-800">
         <div className="flex items-center gap-1">
-          <button
-            onClick={handleLike}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-              isLiked
-                ? "text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/20"
-                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            )}
-          >
-            <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
-            Like
+          <button onClick={handleLike}
+            className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+              isLiked ? "text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/20" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800")}>
+            <Heart className={cn("w-4 h-4", isLiked && "fill-current")} /> Like
           </button>
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Comment
+          <button onClick={() => setShowComments(!showComments)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+            <MessageCircle className="w-4 h-4" /> Comment
           </button>
-          <button
-            onClick={() => setShowShareModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all"
-          >
-            <Share2 className="w-4 h-4" />
-            Share
+          <button onClick={() => setShowShareModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+            <Share2 className="w-4 h-4" /> Share
           </button>
         </div>
-        <button
-          onClick={handleSave}
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-            isSaved
-              ? "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/20"
-              : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-          )}
-        >
+        <button onClick={handleSave}
+          className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+            isSaved ? "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/20" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800")}>
           <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
         </button>
       </div>
@@ -242,39 +266,28 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       {/* Comments Section */}
       {showComments && (
         <div className="border-t border-gray-50 dark:border-gray-800 px-5 py-4 space-y-4">
-          {/* Existing Comments */}
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <Avatar name={comment.user.fullName} size="sm" />
               <div className="flex-1">
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3 py-2">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {comment.user.fullName}
-                  </p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{comment.user.fullName}</p>
                   <p className="text-sm text-gray-700 dark:text-gray-300">{comment.content}</p>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">{formatDate(comment.createdAt)}</p>
               </div>
             </div>
           ))}
-
-          {/* Add Comment */}
           <div className="flex items-center gap-3">
-            <Avatar name="You" size="sm" />
+            <Avatar name={user?.fullName || "You"} size="sm" />
             <div className="flex-1 flex items-center gap-2">
-              <input
-                type="text"
-                value={commentText}
+              <input type="text" value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder="Write a comment..."
                 className="flex-1 rounded-xl bg-gray-50 dark:bg-gray-800 border-0 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/30"
-                onKeyDown={(e) => e.key === "Enter" && handleComment()}
-              />
-              <button
-                onClick={handleComment}
-                disabled={!commentText.trim()}
-                className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                onKeyDown={(e) => e.key === "Enter" && handleComment()} />
+              <button onClick={handleComment} disabled={!commentText.trim()}
+                className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
                 <Send className="w-4 h-4" />
               </button>
             </div>
@@ -287,20 +300,10 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
         <div className="space-y-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">Share this post with your friends!</p>
           <div className="flex items-center gap-3">
-            <input
-              type="text"
-              readOnly
-              value={`${window.location.origin}/post/${post.id}`}
-              className="flex-1 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100"
-            />
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
-                setShowShareModal(false);
-              }}
-            >
+            <input type="text" readOnly value={`${window.location.origin}/post/${post.id}`}
+              className="flex-1 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100" />
+            <Button variant="primary" size="sm"
+              onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`); setShowShareModal(false); }}>
               Copy
             </Button>
           </div>
