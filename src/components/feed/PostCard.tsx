@@ -188,27 +188,48 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
 
       {/* Post Image */}
       {post.type !== "text" && (
-        <div
-          className={cn("mx-5 mb-3 rounded-xl overflow-hidden bg-gradient-to-br", placeholderColor)}
-          style={{ aspectRatio: "16/9", maxHeight: "400px" }}
-        >
+        <div className="mx-5 mb-3 rounded-xl overflow-hidden" style={{ maxHeight: "400px" }}>
           {post.imageUrl ? (
-            <img src={post.imageUrl} alt="Post" className="w-full h-full object-cover" />
+            post.type === "video" ? (
+              <video
+                src={post.imageUrl}
+                controls
+                className="w-full rounded-xl"
+                style={{ maxHeight: "400px" }}
+              />
+            ) : (
+              <img
+                src={post.imageUrl}
+                alt="Post"
+                className="w-full object-cover rounded-xl"
+                style={{ maxHeight: "400px" }}
+              />
+            )
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center text-white/80 p-8">
-                {post.type === "image" ? (
-                  <>
-                    <div className="text-4xl mb-2">📸</div>
-                    <p className="text-sm font-medium">{post.caption || "Post Image"}</p>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-4xl mb-2">🚀</div>
-                    <p className="text-lg font-bold">{post.projectTitle}</p>
-                    <p className="text-sm mt-1 opacity-80 line-clamp-2">{post.projectDescription}</p>
-                  </>
-                )}
+            <div
+              className={cn("bg-gradient-to-br rounded-xl", placeholderColor)}
+              style={{ aspectRatio: "16/9", maxHeight: "400px" }}
+            >
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-center text-white/80 p-8">
+                  {post.type === "image" ? (
+                    <>
+                      <div className="text-4xl mb-2">📸</div>
+                      <p className="text-sm font-medium">{post.caption || "Post Image"}</p>
+                    </>
+                  ) : post.type === "video" ? (
+                    <>
+                      <div className="text-4xl mb-2">🎥</div>
+                      <p className="text-sm font-medium">{post.caption || "Video Post"}</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-4xl mb-2">🚀</div>
+                      <p className="text-lg font-bold">{post.projectTitle}</p>
+                      <p className="text-sm mt-1 opacity-80 line-clamp-2">{post.projectDescription}</p>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           )}
