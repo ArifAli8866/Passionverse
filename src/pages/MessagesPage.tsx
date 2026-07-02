@@ -293,11 +293,19 @@ export default function MessagesPage() {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("ogg") ? "ogg" : "webm";
-        const audioFile = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: mimeType });
-        setSelectedFile(audioFile);
-        stream.getTracks().forEach((t) => t.stop());
+        setTimeout(() => {
+          const chunks = audioChunksRef.current;
+          if (chunks.length === 0) {
+            toast.error("No audio recorded");
+            stream.getTracks().forEach((t) => t.stop());
+            return;
+          }
+          const audioBlob = new Blob(chunks, { type: mimeType });
+          const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("ogg") ? "ogg" : "webm";
+          const audioFile = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: mimeType });
+          setSelectedFile(audioFile);
+          stream.getTracks().forEach((t) => t.stop());
+        }, 300);
       };
       mediaRecorder.start(100);
       setIsRecording(true);
@@ -312,9 +320,12 @@ export default function MessagesPage() {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+      mediaRecorderRef.current.requestData();
+      setTimeout(() => {
+        mediaRecorderRef.current?.stop();
+        setIsRecording(false);
+        if (recordingTimerRef.current) clearInterval(recordingTimerRef.current);
+      }, 100);
     }
   };
 
