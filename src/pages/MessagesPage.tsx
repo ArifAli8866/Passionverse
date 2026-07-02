@@ -281,7 +281,12 @@ export default function MessagesPage() {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+          ? "audio/mp4"
+          : "audio/ogg";
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
       mediaRecorder.ondataavailable = (e) => {
@@ -289,7 +294,8 @@ export default function MessagesPage() {
       };
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const audioFile = new File([audioBlob], `voice_${Date.now()}.webm`, { type: "audio/webm" });
+        const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("ogg") ? "ogg" : "webm";
+        const audioFile = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: mimeType });
         setSelectedFile(audioFile);
         stream.getTracks().forEach((t) => t.stop());
       };
@@ -384,8 +390,8 @@ export default function MessagesPage() {
                     {otherUserTyping
                       ? <span className="text-indigo-500 animate-pulse">typing...</span>
                       : activeUser.is_online
-                      ? <span className="text-emerald-500">Online</span>
-                      : <span className="text-gray-400">@{activeUser.username}</span>}
+                        ? <span className="text-emerald-500">Online</span>
+                        : <span className="text-gray-400">@{activeUser.username}</span>}
                   </p>
                 </div>
               </div>
