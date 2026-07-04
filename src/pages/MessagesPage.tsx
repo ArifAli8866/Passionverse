@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { cn, formatDate } from "@/lib/utils";
 import {
   Search, Send, ArrowLeft, MessageCircle, Image,
-  Mic, MicOff, X, File
+  Mic, MicOff, X, File, Trash2, Forward, MoreVertical
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -55,6 +55,9 @@ export default function MessagesPage() {
   const activeUserRef = useRef<ChatUser | null>(null);
   const channelRef = useRef<any>(null);
   const isTypingRef = useRef(false);
+  const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
+  const [forwardingMessage, setForwardingMessage] = useState<Message | null>(null);
+  const [showForwardModal, setShowForwardModal] = useState(false);
 
   useEffect(() => {
     activeUserRef.current = activeUser;
@@ -214,6 +217,38 @@ export default function MessagesPage() {
     if (error) { toast.error("Upload failed: " + error.message); return null; }
     const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(data.path);
     return urlData.publicUrl;
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      await supabase.from("messages").delete().eq("id", messageId);
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      setSelectedMessage(null);
+      toast.success("Message deleted");
+    } catch (error) {
+      toast.error("Failed to delete message");
+    }
+  };
+
+  const handleForwardMessage = async (targetUserId: string) => {
+    if (!forwardingMessage || !user) return;
+    try {
+      const { data, error } = await supabase.from("messages").insert({
+        sender_id: user.id,
+        receiver_id: targetUserId,
+        content: forwardingMessage.content,
+        read: false,
+        message_type: forwardingMessage.message_type,
+        file_url: forwardingMessage.file_url,
+        file_name: forwardingMessage.file_name,
+      }).select().single();
+      if (error) throw error;
+      toast.success("Message forwarded!");
+      setShowForwardModal(false);
+      setForwardingMessage(null);
+    } catch (error) {
+      toast.error("Failed to forward message");
+    }
   };
 
   const handleSend = async () => {
@@ -412,30 +447,51 @@ export default function MessagesPage() {
                 {messages.map((msg) => {
                   const isMine = msg.sender_id === user?.id;
                   return (
-                    <div key={msg.id} className={cn("flex", isMine ? "justify-end" : "justify-start")}>
-                      <div className={cn("max-w-[75%] rounded-2xl px-4 py-2.5",
-                        isMine ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-br-md"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-md")}>
-                        {msg.message_type === "image" && msg.file_url && (
-                          <img src={msg.file_url} alt="Image" className="rounded-xl mb-2 max-w-full max-h-48 object-cover cursor-pointer"
-                            onClick={() => window.open(msg.file_url, "_blank")} />
-                        )}
-                        {msg.message_type === "voice" && msg.file_url && (
-                          <audio controls src={msg.file_url} className="mb-2 max-w-xs" />
-                        )}
-                        {msg.message_type === "file" && msg.file_url && (
-                          <a href={msg.file_url} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-2 mb-2 underline text-sm">
-                            <File className="w-4 h-4" /> {msg.file_name || "Download file"}
-                          </a>
-                        )}
-                        {(msg.message_type === "text" || !msg.message_type) && (
-                          <p className="text-sm">{msg.content}</p>
-                        )}
-                        <p className={cn("text-xs mt-1", isMine ? "text-indigo-200" : "text-gray-400")}>
-                          {formatDate(msg.created_at)}
-                          {isMine && <span className="ml-1">{msg.read ? "✓✓" : "✓"}</span>}
-                        </p>
+                    <div key={msg.id} className={cn("flex group", isMine ? "justify-end" : "justify-start")}>
+                      <div className="flex items-end gap-1">
+                        {/* Action buttons - show on hover */}
+                        <div className={cn("flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity mb-2",
+                          isMine ? "order-first" : "order-last")}>
+                          <button
+                            onClick={() => { setForwardingMessage(msg); setShowForwardModal(true); }}
+                            className="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-500"
+                            title="Forward">
+                            <Forward className="w-3.5 h-3.5" />
+                          </button>
+                          {isMine && (
+                            <button
+                              onClick={() => handleDeleteMessage(msg.id)}
+                              className="p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 text-red-500"
+                              title="Delete">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        <div className={cn("max-w-[75%] rounded-2xl px-4 py-2.5",
+                          isMine ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-br-md"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-md")}>
+                          {msg.message_type === "image" && msg.file_url && (
+                            <img src={msg.file_url} alt="Image" className="rounded-xl mb-2 max-w-full max-h-48 object-cover cursor-pointer"
+                              onClick={() => window.open(msg.file_url, "_blank")} />
+                          )}
+                          {msg.message_type === "voice" && msg.file_url && (
+                            <audio controls src={msg.file_url} className="mb-2 max-w-xs" />
+                          )}
+                          {msg.message_type === "file" && msg.file_url && (
+                            <a href={msg.file_url} target="_blank" rel="noopener noreferrer"
+                              className="flex items-center gap-2 mb-2 underline text-sm">
+                              <File className="w-4 h-4" /> {msg.file_name || "Download file"}
+                            </a>
+                          )}
+                          {(msg.message_type === "text" || !msg.message_type) && (
+                            <p className="text-sm">{msg.content}</p>
+                          )}
+                          <p className={cn("text-xs mt-1", isMine ? "text-indigo-200" : "text-gray-400")}>
+                            {formatDate(msg.created_at)}
+                            {isMine && <span className="ml-1">{msg.read ? "✓✓" : "✓"}</span>}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );
@@ -530,6 +586,37 @@ export default function MessagesPage() {
           )}
         </div>
       </div>
+
+      {/* Forward Modal */}
+      {showForwardModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100">Forward Message</h3>
+              <button onClick={() => { setShowForwardModal(false); setForwardingMessage(null); }}
+                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">Select a conversation to forward to:</p>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {conversations.map((conv) => (
+                <button key={conv.id} onClick={() => handleForwardMessage(conv.id)}
+                  className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <Avatar name={conv.full_name} size="sm" />
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{conv.full_name}</p>
+                    <p className="text-xs text-gray-500">@{conv.username}</p>
+                  </div>
+                </button>
+              ))}
+              {conversations.length === 0 && (
+                <p className="text-sm text-gray-400 text-center py-4">No conversations to forward to</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </AppLayout>
   );
 }
