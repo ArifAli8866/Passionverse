@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/store/auth";
 import AppLayout from "@/components/layout/AppLayout";
 import { Avatar } from "@/components/ui/avatar";
@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import { formatCount } from "@/lib/utils";
 import type { Post } from "@/types";
-import { MapPin, Link as LinkIcon, Calendar, Users, Image, Grid, Settings, UserPlus, UserCheck } from "lucide-react";
+import { MapPin, Link as LinkIcon, Calendar, Users, Image, Grid, Settings, UserPlus, UserCheck, MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function ProfilePage() {
@@ -136,9 +136,14 @@ export default function ProfilePage() {
                   <p className="text-sm text-gray-500">@{profileUser.username}</p>
                 </div>
                 {!isOwnProfile && (
-                  <Button variant={isFollowing ? "outline" : "primary"} size="sm" onClick={handleFollow}>
-                    {isFollowing ? (<><UserCheck className="w-4 h-4" /> Following</>) : (<><UserPlus className="w-4 h-4" /> Follow</>)}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant={isFollowing ? "outline" : "primary"} size="sm" onClick={handleFollow}>
+                      {isFollowing ? (<><UserCheck className="w-4 h-4" /> Following</>) : (<><UserPlus className="w-4 h-4" /> Follow</>)}
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => navigate("/messages")}>
+                      <MessageCircle className="w-4 h-4" /> Message
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
