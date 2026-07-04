@@ -191,7 +191,7 @@ export default function SettingsPage() {
                           className="w-20 h-20 rounded-full object-cover ring-4 ring-indigo-100"
                         />
                       ) : (
-                        <Avatar name={user?.fullName} size="xl" />
+                        <Avatar src={user?.avatar} name={user?.fullName} size="xl" />
                       )}
                       <label
                         htmlFor="avatar-upload"

@@ -43,7 +43,7 @@ export function Sidebar({ className }: SidebarProps) {
         {/* User Card */}
         <div className="rounded-2xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
           <Link to={`/profile/${user?.username}`} className="flex items-center gap-3">
-            <Avatar name={user?.fullName} size="lg" />
+            <Avatar src={user?.avatar} name={user?.fullName} size="lg" />
             <div className="min-w-0">
               <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">{user?.fullName}</p>
               <p className="text-sm text-gray-500">@{user?.username}</p>

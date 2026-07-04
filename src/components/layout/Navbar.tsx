@@ -187,7 +187,7 @@ export default function Navbar() {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="flex items-center gap-2 p-1 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
               >
-                <Avatar name={user?.fullName} size="sm" />
+                <Avatar src={user?.avatar} name={user?.fullName} size="sm" />
                 <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
               </button>
 
