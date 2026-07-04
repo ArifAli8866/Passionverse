@@ -139,7 +139,7 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
   const placeholderColor = placeholderColors[post.id.length % placeholderColors.length];
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
+    <div className="post-card card-shine rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <Link to={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
@@ -264,8 +264,12 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       <div className="flex items-center justify-between px-5 py-2 border-t border-gray-50 dark:border-gray-800">
         <div className="flex items-center gap-1">
           <button onClick={handleLike}
-            className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-              isLiked ? "text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/20" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800")}>
+            className={cn(
+              "like-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+              isLiked
+                ? "liked text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/20"
+                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+            )}>
             <Heart className={cn("w-4 h-4", isLiked && "fill-current")} /> Like
           </button>
           <button onClick={() => setShowComments(!showComments)}
