@@ -281,33 +281,33 @@ export default function MessagesPage() {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
-        ? "audio/webm"
-        : MediaRecorder.isTypeSupported("audio/mp4")
-          ? "audio/mp4"
-          : "audio/ogg";
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
+
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
       mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+          console.log("chunk received:", e.data.size);
+        }
       };
+
       mediaRecorder.onstop = () => {
-        setTimeout(() => {
-          const chunks = audioChunksRef.current;
-          if (chunks.length === 0) {
-            toast.error("No audio recorded");
-            stream.getTracks().forEach((t) => t.stop());
-            return;
-          }
-          const audioBlob = new Blob(chunks, { type: mimeType });
-          const ext = mimeType.includes("mp4") ? "mp4" : mimeType.includes("ogg") ? "ogg" : "webm";
-          const audioFile = new File([audioBlob], `voice_${Date.now()}.${ext}`, { type: mimeType });
-          setSelectedFile(audioFile);
-          stream.getTracks().forEach((t) => t.stop());
-        }, 300);
+        console.log("stopped, chunks:", audioChunksRef.current.length);
+        const blob = new Blob(audioChunksRef.current);
+        console.log("blob size:", blob.size);
+        const audioFile = new File(
+          [blob],
+          `voice_${Date.now()}.webm`,
+          { type: "audio/webm" }
+        );
+        setSelectedFile(audioFile);
+        setFilePreview(null);
+        stream.getTracks().forEach((t) => t.stop());
       };
-      mediaRecorder.start(100);
+
+      mediaRecorder.start(250);
       setIsRecording(true);
       setRecordingTime(0);
       recordingTimerRef.current = setInterval(() => {
