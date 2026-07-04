@@ -109,7 +109,7 @@ export default function SettingsPage() {
         bio: formData.bio,
         location: formData.location,
         website: formData.website,
-        avatar: avatarUrl,
+        avatar: avatarUrl ? `${avatarUrl}?t=${Date.now()}` : user?.avatar,
         hobbies: selectedHobbies,
       });
 
