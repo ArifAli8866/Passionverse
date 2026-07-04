@@ -4,54 +4,65 @@ import AppLayout from "@/components/layout/AppLayout";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { cn, HOBBIES, MOCK_USERS, MOCK_POSTS } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import { cn, HOBBIES } from "@/lib/utils";
 import { Search, Users, Hash, MapPin } from "lucide-react";
-import type { User } from "@/types";
 
 type SearchTab = "people" | "hobbies" | "posts";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  const initialHobby = searchParams.get("hobby") || "";
 
   const [query, setQuery] = useState(initialQuery);
-  const [activeTab, setActiveTab] = useState<SearchTab>(initialHobby ? "hobbies" : "people");
-  const [results, setResults] = useState<{
-    people: User[];
-    hobbies: { id: string; name: string; category: string }[];
-    posts: typeof MOCK_POSTS;
-  }>({
-    people: [],
-    hobbies: [],
-    posts: [],
-  });
+  const [activeTab, setActiveTab] = useState<SearchTab>("people");
+  const [people, setPeople] = useState<any[]>([]);
+  const [posts, setPosts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const filteredHobbies = HOBBIES.filter(
+    (h) =>
+      h.name.toLowerCase().includes(query.toLowerCase()) ||
+      h.category.toLowerCase().includes(query.toLowerCase())
+  );
 
   useEffect(() => {
-    const searchTerm = query.toLowerCase();
-    const hobbyFilter = initialHobby.toLowerCase();
+    if (query.trim().length < 1) {
+      setPeople([]);
+      setPosts([]);
+      return;
+    }
+    const timer = setTimeout(() => {
+      searchAll(query);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [query]);
 
-    const filteredHobbies = HOBBIES.filter(
-      (h) =>
-        h.name.toLowerCase().includes(hobbyFilter || searchTerm) ||
-        h.category.toLowerCase().includes(searchTerm)
-    );
+  const searchAll = async (searchTerm: string) => {
+    setIsLoading(true);
+    try {
+      // Search people
+      const { data: peopleData } = await supabase
+        .from("profiles")
+        .select("id, full_name, username, avatar_url, bio, location")
+        .or(`full_name.ilike.%${searchTerm}%,username.ilike.%${searchTerm}%`)
+        .limit(10);
+      setPeople(peopleData || []);
 
-    const filteredPeople = MOCK_USERS.filter(
-      (u) =>
-        u.fullName.toLowerCase().includes(searchTerm) ||
-        u.username.toLowerCase().includes(searchTerm) ||
-        u.hobbies.some((h) => h.includes(searchTerm))
-    );
-
-    const filteredPosts = MOCK_POSTS.filter(
-      (p) =>
-        p.content.toLowerCase().includes(searchTerm) ||
-        p.user.fullName.toLowerCase().includes(searchTerm)
-    );
-
-    setResults({ people: filteredPeople as User[], hobbies: filteredHobbies, posts: filteredPosts });
-  }, [query, initialHobby]);
+      // Search posts
+      const { data: postsData } = await supabase
+        .from("posts")
+        .select("*, profiles:user_id (id, full_name, username, avatar_url), post_likes (user_id), comments (id)")
+        .ilike("content", `%${searchTerm}%`)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      setPosts(postsData || []);
+    } catch (error) {
+      console.error("Search failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <AppLayout>
@@ -67,6 +78,7 @@ export default function SearchPage() {
               setSearchParams({ q: e.target.value });
             }}
             placeholder="Search people, hobbies, posts..."
+            autoFocus
             className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-12 pr-4 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
           />
         </div>
@@ -94,33 +106,34 @@ export default function SearchPage() {
           ))}
         </div>
 
-        {/* Results */}
-        {activeTab === "people" && (
+        {isLoading && (
+          <div className="text-center py-8 text-sm text-gray-400">Searching...</div>
+        )}
+
+        {/* People Results */}
+        {activeTab === "people" && !isLoading && (
           <div className="space-y-3">
-            {results.people.length === 0 ? (
+            {query.trim() === "" ? (
+              <EmptyState icon={Users} title="Search for people" desc="Type a name or username to find people" />
+            ) : people.length === 0 ? (
               <EmptyState icon={Users} title="No people found" desc="Try a different search term" />
             ) : (
-              results.people.map((user) => (
-                <Link key={user.id} to={`/profile/${user.username}`}>
+              people.map((person) => (
+                <Link key={person.id} to={`/profile/${person.username}`}>
                   <Card hover className="flex items-center gap-4 p-4">
-                    <Avatar name={user.fullName} size="lg" />
+                    <Avatar name={person.full_name} size="lg" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-gray-900 dark:text-gray-100">{user.fullName}</p>
-                      <p className="text-sm text-gray-500">@{user.username}</p>
-                      {user.location && (
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">{person.full_name}</p>
+                      <p className="text-sm text-gray-500">@{person.username}</p>
+                      {person.location && (
                         <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3" /> {user.location}
+                          <MapPin className="w-3 h-3" /> {person.location}
                         </p>
                       )}
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {user.hobbies.slice(0, 3).map((h) => (
-                          <Badge key={h} variant="outline" size="sm">
-                            {HOBBIES.find((hb) => hb.id === h)?.name?.replace(/^[^\s]+\s/, "") || h}
-                          </Badge>
-                        ))}
-                      </div>
+                      {person.bio && (
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">{person.bio}</p>
+                      )}
                     </div>
-                    <p className="text-sm text-gray-500">{user.followers} followers</p>
                   </Card>
                 </Link>
               ))
@@ -128,15 +141,16 @@ export default function SearchPage() {
           </div>
         )}
 
-        {activeTab === "hobbies" && (
+        {/* Hobbies Results */}
+        {activeTab === "hobbies" && !isLoading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {results.hobbies.length === 0 ? (
+            {filteredHobbies.length === 0 ? (
               <div className="col-span-full">
                 <EmptyState icon={Hash} title="No hobbies found" desc="Try a different category" />
               </div>
             ) : (
-              results.hobbies.map((hobby) => (
-                <Link key={hobby.id} to={`/search?hobby=${hobby.id}`}>
+              filteredHobbies.map((hobby) => (
+                <Link key={hobby.id} to={`/search?q=${hobby.name}`}>
                   <Card hover className="p-4 text-center">
                     <div className="text-2xl mb-2">{hobby.name.split(" ")[0]}</div>
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -150,30 +164,39 @@ export default function SearchPage() {
           </div>
         )}
 
-        {activeTab === "posts" && (
+        {/* Posts Results */}
+        {activeTab === "posts" && !isLoading && (
           <div className="space-y-3">
-            {results.posts.length === 0 ? (
+            {query.trim() === "" ? (
+              <EmptyState icon={Search} title="Search for posts" desc="Type keywords to find posts" />
+            ) : posts.length === 0 ? (
               <EmptyState icon={Search} title="No posts found" desc="Try different keywords" />
             ) : (
-              results.posts.map((post) => (
-                <Link key={post.id} to="/feed" className="block">
-                  <Card hover className="p-4">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Avatar name={post.user.fullName} size="sm" />
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                          {post.user.fullName}
-                        </p>
-                        <p className="text-xs text-gray-500">@{post.user.username}</p>
-                      </div>
+              posts.map((post) => (
+                <Card key={post.id} hover className="p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Link to={`/profile/${post.profiles?.username}`}>
+                      <Avatar name={post.profiles?.full_name} size="sm" />
+                    </Link>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {post.profiles?.full_name}
+                      </p>
+                      <p className="text-xs text-gray-500">@{post.profiles?.username}</p>
                     </div>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">{post.content}</p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                      <span>❤️ {post.likes}</span>
-                      <span>💬 {post.comments}</span>
-                    </div>
-                  </Card>
-                </Link>
+                    {post.type !== "text" && (
+                      <Badge variant="outline" size="sm" className="ml-auto capitalize">{post.type}</Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">{post.content}</p>
+                  {post.image_url && post.type === "image" && (
+                    <img src={post.image_url} alt="Post" className="mt-2 rounded-xl w-full max-h-40 object-cover" />
+                  )}
+                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                    <span>❤️ {post.post_likes?.length || 0}</span>
+                    <span>💬 {post.comments?.length || 0}</span>
+                  </div>
+                </Card>
               ))
             )}
           </div>
