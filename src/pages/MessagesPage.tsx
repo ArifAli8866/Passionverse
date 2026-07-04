@@ -479,7 +479,7 @@ export default function MessagesPage() {
                 {isRecording && (
                   <div className="flex items-center gap-2 mb-2 text-sm text-red-500">
                     <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                    Recording... {recordingTime}s (release to send)
+                    Recording... {recordingTime}s (click mic again to stop)
                   </div>
                 )}
                 <div className="flex items-center gap-2">
@@ -503,12 +503,9 @@ export default function MessagesPage() {
 
                   {!newMessage.trim() && !selectedFile ? (
                     <button
-                      onMouseDown={startRecording}
-                      onMouseUp={stopRecording}
-                      onTouchStart={startRecording}
-                      onTouchEnd={stopRecording}
+                      onClick={isRecording ? stopRecording : startRecording}
                       className={cn("p-2.5 rounded-xl transition-all select-none",
-                        isRecording ? "bg-red-500 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-indigo-600")}>
+                        isRecording ? "bg-red-500 text-white animate-pulse" : "bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-indigo-600")}>
                       {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                     </button>
                   ) : (
