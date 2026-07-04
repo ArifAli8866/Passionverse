@@ -1,3 +1,4 @@
+// Settings v2 - avatar upload enabled
 import { useState, useRef } from "react";
 import { useAuth } from "@/store/auth";
 import { useTheme } from "@/store/theme";
@@ -163,11 +164,10 @@ export default function SettingsPage() {
             <div className="flex lg:flex-col gap-1 overflow-x-auto">
               {tabs.map((tab) => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-                    activeTab === tab.id
-                      ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
-                      : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800"
-                  }`}>
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.id
+                    ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+                    : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800"
+                    }`}>
                   <tab.icon className="w-4 h-4" />
                   {tab.label}
                 </button>
@@ -193,24 +193,31 @@ export default function SettingsPage() {
                       ) : (
                         <Avatar name={user?.fullName} size="xl" />
                       )}
-                      <button
-                        onClick={() => avatarInputRef.current?.click()}
-                        className="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 transition-colors">
+                      <label
+                        htmlFor="avatar-upload"
+                        className="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 transition-colors cursor-pointer">
                         <Camera className="w-3.5 h-3.5" />
-                      </button>
+                      </label>
                     </div>
                     <div>
-                      <button
-                        onClick={() => avatarInputRef.current?.click()}
-                        className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+                      <label
+                        htmlFor="avatar-upload"
+                        className="text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer">
                         Change Avatar
-                      </button>
+                      </label>
                       <p className="text-xs text-gray-400 mt-1">JPG, PNG. Max 5MB.</p>
                       {avatarFile && (
                         <p className="text-xs text-emerald-500 mt-1">✓ New avatar selected</p>
                       )}
                     </div>
-                    <input ref={avatarInputRef} type="file" accept="image/*" onChange={handleAvatarSelect} className="hidden" />
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarSelect}
+                      style={{ display: "none" }}
+                      id="avatar-upload"
+                    />
                   </div>
 
                   <div className="space-y-4">
@@ -282,7 +289,7 @@ export default function SettingsPage() {
                         <p className="text-sm text-gray-500">Minimize motion effects</p>
                       </div>
                     </div>
-                    <Toggle value={false} onChange={() => {}} />
+                    <Toggle value={false} onChange={() => { }} />
                   </div>
                 </div>
               </Card>
