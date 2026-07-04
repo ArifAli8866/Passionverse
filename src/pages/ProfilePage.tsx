@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const isOwnProfile = currentUser?.username === username;
+  const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
