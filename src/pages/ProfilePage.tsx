@@ -174,7 +174,7 @@ export default function ProfilePage() {
             <>
               <label
                 htmlFor="cover-upload"
-                className="absolute bottom-3 right-3 flex items-center gap-2 bg-black/50 hover:bg-black/70 text-white text-sm px-3 py-1.5 rounded-xl backdrop-blur-sm transition-all cursor-pointer">
+                className="absolute bottom-3 left-3 flex items-center gap-2 bg-black/50 hover:bg-black/70 text-white text-sm px-3 py-1.5 rounded-xl backdrop-blur-sm transition-all cursor-pointer">
                 <Camera className="w-4 h-4" />
                 {coverUploading ? "Uploading..." : "Change Cover"}
               </label>
