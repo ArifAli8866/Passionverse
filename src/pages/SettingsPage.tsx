@@ -36,6 +36,7 @@ export default function SettingsPage() {
     website: user?.website || "",
   });
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>(user?.hobbies || []);
+  const [customHobby, setCustomHobby] = useState("");
   const [privacy, setPrivacy] = useState({
     privateProfile: false,
     showOnlineStatus: true,
@@ -245,7 +246,7 @@ export default function SettingsPage() {
                 <Card>
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Your Hobbies</h2>
                   <p className="text-sm text-gray-500 mb-4">Select the hobbies you are passionate about</p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {HOBBIES.map((hobby) => (
                       <button key={hobby.id} type="button" onClick={() => toggleHobby(hobby.id)}>
                         <Badge variant={selectedHobbies.includes(hobby.id) ? "primary" : "default"}>
@@ -253,7 +254,45 @@ export default function SettingsPage() {
                         </Badge>
                       </button>
                     ))}
+                    {/* Custom hobbies */}
+                    {selectedHobbies.filter(h => !HOBBIES.find(hb => hb.id === h)).map((custom) => (
+                      <button key={custom} type="button" onClick={() => toggleHobby(custom)}>
+                        <Badge variant="primary">
+                          ✨ {custom} ×
+                        </Badge>
+                      </button>
+                    ))}
                   </div>
+                  {/* Add custom hobby */}
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="text"
+                      value={customHobby}
+                      onChange={(e) => setCustomHobby(e.target.value)}
+                      placeholder="Add your own hobby..."
+                      className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && customHobby.trim()) {
+                          if (!selectedHobbies.includes(customHobby.trim())) {
+                            setSelectedHobbies((prev) => [...prev, customHobby.trim()]);
+                          }
+                          setCustomHobby("");
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (customHobby.trim() && !selectedHobbies.includes(customHobby.trim())) {
+                          setSelectedHobbies((prev) => [...prev, customHobby.trim()]);
+                        }
+                        setCustomHobby("");
+                      }}
+                      className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-xl hover:bg-indigo-700 transition-colors">
+                      Add
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">Press Enter or click Add to add a custom hobby</p>
                 </Card>
 
                 <div className="flex items-center justify-between">
