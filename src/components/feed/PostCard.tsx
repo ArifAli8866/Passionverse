@@ -143,7 +143,7 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <Link to={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
-          <Avatar name={post.user.fullName} size="md" />
+          <Avatar src={post.user.avatar || undefined} name={post.user.fullName} size="md" />
           <div>
             <p className="font-semibold text-gray-900 group-hover:text-indigo-600 dark:text-gray-100 dark:group-hover:text-indigo-400 transition-colors">
               {post.user.fullName}
@@ -293,7 +293,7 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
         <div className="border-t border-gray-50 dark:border-gray-800 px-5 py-4 space-y-4">
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
-              <Avatar name={comment.user.fullName} size="sm" />
+              <Avatar src={comment.user.avatar || undefined} name={comment.user.fullName} size="sm" />
               <div className="flex-1">
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3 py-2">
                   <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{comment.user.fullName}</p>
@@ -304,7 +304,7 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
             </div>
           ))}
           <div className="flex items-center gap-3">
-            <Avatar name={user?.fullName || "You"} size="sm" />
+            <Avatar src={user?.avatar || undefined} name={user?.fullName || "You"} size="sm" />
             <div className="flex-1 flex items-center gap-2">
               <input type="text" value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
