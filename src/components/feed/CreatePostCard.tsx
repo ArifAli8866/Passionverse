@@ -12,7 +12,7 @@ export default function CreatePostCard() {
       className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 block"
     >
       <div className="flex items-center gap-3">
-        <Avatar name={user?.fullName} size="md" />
+        <Avatar src={user?.avatar || undefined} name={user?.fullName} size="md" />
         <div className="flex-1 rounded-xl bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-400 dark:text-gray-500">
           What are you passionate about?
         </div>

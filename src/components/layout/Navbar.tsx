@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/store/auth";
 import { useTheme } from "@/store/theme";
@@ -23,7 +23,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { MOCK_NOTIFICATIONS } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -35,7 +35,35 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const unreadNotifications = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("read", false);
+      setUnreadNotifications(count || 0);
+    };
+    fetchUnread();
+
+    // Realtime updates
+    const channel = supabase
+      .channel("navbar-notifications")
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${user.id}`,
+      }, () => {
+        fetchUnread();
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [user]);
 
   const navLinks = [
     { href: "/feed", label: "Home", icon: Home },
