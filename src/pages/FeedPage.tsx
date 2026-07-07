@@ -19,7 +19,7 @@ export default function FeedPage() {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from("posts")
         .select(`
           *,
@@ -34,6 +34,22 @@ export default function FeedPage() {
         `)
         .order("created_at", { ascending: false });
 
+      // Filter by following
+      if (activeTab === "following" && user) {
+        const { data: followingData } = await supabase
+          .from("followers")
+          .select("following_id")
+          .eq("follower_id", user.id);
+        const followingIds = (followingData || []).map((f) => f.following_id);
+        if (followingIds.length === 0) {
+          setPosts([]);
+          setIsLoading(false);
+          return;
+        }
+        query = query.in("user_id", followingIds);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
 
       const formatted = (data || []).map((post: any) => ({
