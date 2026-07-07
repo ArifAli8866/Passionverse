@@ -33,8 +33,56 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsLoaded, setCommentsLoaded] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+
+  const fetchComments = async () => {
+    if (commentsLoaded) return;
+    setCommentsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("comments")
+        .select("*, profiles:user_id (id, full_name, username, avatar_url)")
+        .eq("post_id", post.id)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+
+      const formatted = (data || []).map((c: any) => ({
+        id: c.id,
+        postId: c.post_id,
+        userId: c.user_id,
+        content: c.content,
+        createdAt: c.created_at,
+        user: {
+          id: c.profiles?.id,
+          fullName: c.profiles?.full_name || "User",
+          username: c.profiles?.username || "",
+          avatar: c.profiles?.avatar_url || "",
+          bio: "",
+          location: "",
+          website: "",
+          hobbies: [],
+          followers: 0,
+          following: 0,
+          posts: 0,
+        },
+      }));
+      setComments(formatted as Comment[]);
+      setCommentsLoaded(true);
+    } catch (error) {
+      console.error("Failed to load comments");
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const handleToggleComments = () => {
+    if (!showComments) fetchComments();
+    setShowComments(!showComments);
+  };
 
   const handleLike = async () => {
     if (!user) return;
@@ -272,8 +320,9 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
             )}>
             <Heart className={cn("w-4 h-4", isLiked && "fill-current")} /> Like
           </button>
-          <button onClick={() => setShowComments(!showComments)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
+          <button onClick={handleToggleComments}
+            className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+              showComments ? "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/20" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800")}>
             <MessageCircle className="w-4 h-4" /> Comment
           </button>
           <button onClick={() => setShowShareModal(true)}
@@ -290,29 +339,47 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
 
       {/* Comments Section */}
       {showComments && (
-        <div className="border-t border-gray-50 dark:border-gray-800 px-5 py-4 space-y-4">
+        <div className="border-t border-gray-50 dark:border-gray-800 px-5 py-4 space-y-3">
+          {/* Loading state */}
+          {commentsLoading && (
+            <div className="flex items-center justify-center py-4">
+              <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+
+          {/* No comments */}
+          {!commentsLoading && comments.length === 0 && (
+            <p className="text-center text-sm text-gray-400 py-3">No comments yet. Be the first!</p>
+          )}
+
+          {/* Comments list */}
           {comments.map((comment) => (
             <div key={comment.id} className="flex gap-3">
               <Avatar src={comment.user.avatar || undefined} name={comment.user.fullName} size="sm" />
               <div className="flex-1">
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3 py-2">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{comment.user.fullName}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl px-3 py-2">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{comment.user.fullName}</p>
+                    <p className="text-xs text-gray-400">@{comment.user.username}</p>
+                  </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300">{comment.content}</p>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">{formatDate(comment.createdAt)}</p>
+                <p className="text-xs text-gray-400 mt-1 ml-2">{formatDate(comment.createdAt)}</p>
               </div>
             </div>
           ))}
-          <div className="flex items-center gap-3">
+
+          {/* Add comment input */}
+          <div className="flex items-center gap-3 pt-1">
             <Avatar src={user?.avatar || undefined} name={user?.fullName || "You"} size="sm" />
-            <div className="flex-1 flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-2 bg-gray-50 dark:bg-gray-800 rounded-2xl px-3 py-1.5">
               <input type="text" value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder="Write a comment..."
-                className="flex-1 rounded-xl bg-gray-50 dark:bg-gray-800 border-0 px-4 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/30"
+                className="flex-1 bg-transparent border-0 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none"
                 onKeyDown={(e) => e.key === "Enter" && handleComment()} />
               <button onClick={handleComment} disabled={!commentText.trim()}
-                className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
                 <Send className="w-4 h-4" />
               </button>
             </div>
