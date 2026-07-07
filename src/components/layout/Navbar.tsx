@@ -36,6 +36,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [recentNotifications, setRecentNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -46,6 +47,14 @@ export default function Navbar() {
         .eq("user_id", user.id)
         .eq("read", false);
       setUnreadNotifications(count || 0);
+
+      const { data } = await supabase
+        .from("notifications")
+        .select("*, actor:actor_id (id, full_name, username, avatar_url)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+      setRecentNotifications(data || []);
     };
     fetchUnread();
 
@@ -178,7 +187,11 @@ export default function Navbar() {
                       </Link>
                     </div>
                     <div className="max-h-96 overflow-y-auto">
-                      {MOCK_NOTIFICATIONS.slice(0, 5).map((notif) => (
+                      {recentNotifications.length === 0 ? (
+                        <div className="px-4 py-8 text-center text-sm text-gray-400">
+                          No notifications yet
+                        </div>
+                      ) : recentNotifications.map((notif) => (
                         <Link
                           key={notif.id}
                           to="/notifications"
@@ -188,14 +201,18 @@ export default function Navbar() {
                             !notif.read && "bg-indigo-50/50 dark:bg-indigo-900/10"
                           )}
                         >
-                          <Avatar name={notif.user.fullName} size="sm" />
+                          <Avatar src={notif.actor?.avatar_url} name={notif.actor?.full_name || "User"} size="sm" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-gray-900 dark:text-gray-100">
-                              <span className="font-medium">{notif.user.fullName}</span>{" "}
-                              <span className="text-gray-500">{notif.message}</span>
+                              <span className="font-medium">{notif.actor?.full_name || "Someone"}</span>{" "}
+                              <span className="text-gray-500">
+                                {notif.type === "like" ? "liked your post" :
+                                 notif.type === "comment" ? "commented on your post" :
+                                 notif.type === "follow" ? "started following you" : "interacted with you"}
+                              </span>
                             </p>
                             <p className="text-xs text-gray-400 mt-0.5">
-                              {new Date(notif.createdAt).toLocaleDateString()}
+                              {new Date(notif.created_at).toLocaleDateString()}
                             </p>
                           </div>
                           {!notif.read && (
