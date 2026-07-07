@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedHobbies, setSelectedHobbies] = useState<string[]>([]);
+  const [customHobby, setCustomHobby] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -212,7 +213,7 @@ export default function RegisterPage() {
               </>
             ) : (
               <>
-                <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+                <div className="max-h-48 overflow-y-auto space-y-2 pr-1">
                   {HOBBIES.map((hobby) => (
                     <button
                       key={hobby.id}
@@ -226,7 +227,53 @@ export default function RegisterPage() {
                       {hobby.name}
                     </button>
                   ))}
+                  {/* Show custom hobbies */}
+                  {selectedHobbies
+                    .filter((h) => !HOBBIES.find((hb) => hb.id === h))
+                    .map((custom) => (
+                      <button
+                        key={custom}
+                        type="button"
+                        onClick={() => toggleHobby(custom)}
+                        className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all bg-purple-50 text-purple-700 border-2 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700"
+                      >
+                        ✨ {custom} — tap to remove
+                      </button>
+                    ))}
                 </div>
+
+                {/* Add custom hobby */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={customHobby}
+                    onChange={(e) => setCustomHobby(e.target.value)}
+                    placeholder="Add your own hobby..."
+                    className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (customHobby.trim() && !selectedHobbies.includes(customHobby.trim())) {
+                          setSelectedHobbies((prev) => [...prev, customHobby.trim()]);
+                        }
+                        setCustomHobby("");
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customHobby.trim() && !selectedHobbies.includes(customHobby.trim())) {
+                        setSelectedHobbies((prev) => [...prev, customHobby.trim()]);
+                      }
+                      setCustomHobby("");
+                    }}
+                    className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                  >
+                    + Add
+                  </button>
+                </div>
+
                 <p className="text-xs text-gray-500 text-center">
                   Selected: {selectedHobbies.length} hobbies
                 </p>
