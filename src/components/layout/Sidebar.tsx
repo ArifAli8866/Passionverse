@@ -13,6 +13,7 @@ import {
   Bookmark,
   Settings,
   BarChart3,
+  Users,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -26,6 +27,7 @@ export function Sidebar({ className }: SidebarProps) {
   const mainLinks = [
     { href: "/feed", label: "Feed", icon: Home },
     { href: "/discover", label: "Discover", icon: Compass },
+    { href: "/groups", label: "Groups", icon: Users },
     { href: "/messages", label: "Messages", icon: MessageCircle },
     { href: "/notifications", label: "Notifications", icon: Bell },
   ];

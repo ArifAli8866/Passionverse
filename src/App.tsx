@@ -15,6 +15,8 @@ import SearchPage from "@/pages/SearchPage";
 import DashboardPage from "@/pages/DashboardPage";
 import SettingsPage from "@/pages/SettingsPage";
 import SavedPostsPage from "@/pages/SavedPostsPage";
+import GroupsPage from "@/pages/GroupsPage";
+import GroupDetailPage from "@/pages/GroupDetailPage";
 import { Toaster } from "react-hot-toast";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -82,6 +84,8 @@ function AppRoutes() {
       <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/saved" element={<ProtectedRoute><SavedPostsPage /></ProtectedRoute>} />
+      <Route path="/groups" element={<ProtectedRoute><GroupsPage /></ProtectedRoute>} />
+      <Route path="/groups/:id" element={<ProtectedRoute><GroupDetailPage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
