@@ -1,6 +1,6 @@
 -- PassionVerse Database Schema
 -- Run this in your Supabase SQL Editor
-
+-- the data base in ingegarted on the supabase witht he auth of goolge, and github
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
