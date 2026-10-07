@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { formatCount } from "@/lib/utils";
 import type { Post } from "@/types";
 import { MapPin, Link as LinkIcon, Calendar, Users, Image, Grid, Settings, UserPlus, UserCheck, MessageCircle, Camera, Pencil, Trash2, X, Check } from "lucide-react";
+import AIPassionProfileCard from "@/components/ai/AIPassionProfileCard";
 import toast from "react-hot-toast";
 
 export default function ProfilePage() {
@@ -247,6 +248,19 @@ export default function ProfilePage() {
               <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCount(followingCount)}</p>
               <p className="text-xs text-gray-500">Following</p>
             </div>
+          </div>
+
+          {/* AI Passion Intelligence (Feature 1) */}
+          <div className="mt-6">
+            <AIPassionProfileCard
+              userId={profileUser.id}
+              fullName={profileUser.full_name}
+              username={profileUser.username}
+              bio={profileUser.bio}
+              hobbies={profileUser.hobbies || []}
+              posts={userPosts}
+              isOwnProfile={isOwnProfile}
+            />
           </div>
 
           {/* Posts Tab */}

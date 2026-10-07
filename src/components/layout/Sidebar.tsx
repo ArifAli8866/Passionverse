@@ -14,6 +14,8 @@ import {
   Settings,
   BarChart3,
   Users,
+  Sparkles,
+  Search,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -88,6 +90,34 @@ export function Sidebar({ className }: SidebarProps) {
               </Link>
             );
           })}
+          <p className="mt-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1">
+            <Sparkles className="w-3 h-3" /> AI Intelligence
+          </p>
+          <Link
+            to="/discover"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+              location.pathname === "/discover"
+                ? "bg-gradient-to-r from-purple-50 to-indigo-50 text-indigo-600 dark:from-purple-900/20 dark:to-indigo-900/20 dark:text-indigo-400"
+                : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800"
+            )}
+          >
+            <Sparkles className="w-4 h-4 text-purple-500" />
+            Passion Matches
+          </Link>
+          <Link
+            to="/search"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+              location.pathname === "/search"
+                ? "bg-gradient-to-r from-purple-50 to-indigo-50 text-indigo-600 dark:from-purple-900/20 dark:to-indigo-900/20 dark:text-indigo-400"
+                : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800"
+            )}
+          >
+            <Search className="w-4 h-4 text-indigo-500" />
+            Semantic Search
+          </Link>
+
           <p className="mt-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400">Your Space</p>
           {yourLinks.map((link) => {
             const isActive = location.pathname === link.href;

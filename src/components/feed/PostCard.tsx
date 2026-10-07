@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "@/components/ui/avatar";
 import { Modal } from "@/components/ui/modal";
@@ -6,7 +6,9 @@ import Button from "@/components/ui/button";
 import { cn, formatDate, formatCount } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/store/auth";
-import type { Post, Comment } from "@/types";
+import type { Post, Comment, ProjectMatch } from "@/types";
+import ProjectMatchBadge from "@/components/ai/ProjectMatchBadge";
+import { MatchingService } from "@/services/ai/MatchingService";
 import {
   Heart,
   MessageCircle,
@@ -37,6 +39,24 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
   const [commentsLoaded, setCommentsLoaded] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [projectMatch, setProjectMatch] = useState<ProjectMatch | null>(null);
+
+  useEffect(() => {
+    if (post.type === "project" && user && user.id !== post.userId) {
+      const userProfile = {
+        userId: user.id,
+        summary: user.bio || "",
+        passions: (user.hobbies || []).map((h) => ({ name: h, score: 90, category: "Hobby" })),
+        skills: user.hobbies || [],
+        technologies: user.hobbies || [],
+        currentlyLearning: [],
+        lookingFor: [],
+        goals: [],
+      };
+      const match = MatchingService.matchProjectToUser(post, userProfile as any);
+      setProjectMatch(match);
+    }
+  }, [post, user]);
 
   const fetchComments = async () => {
     if (commentsLoaded) return;
@@ -299,6 +319,13 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
               <ExternalLink className="w-3.5 h-3.5" /> Live Demo
             </a>
           )}
+        </div>
+      )}
+
+      {/* AI Project Match Badge */}
+      {post.type === "project" && projectMatch && user && user.id !== post.userId && (
+        <div className="px-5">
+          <ProjectMatchBadge match={projectMatch} />
         </div>
       )}
 

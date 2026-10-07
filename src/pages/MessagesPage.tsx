@@ -6,9 +6,10 @@ import { supabase } from "@/lib/supabase";
 import { cn, formatDate } from "@/lib/utils";
 import {
   Search, Send, ArrowLeft, MessageCircle, Image,
-  Mic, MicOff, X, File, Trash2, Forward, MoreVertical
+  Mic, MicOff, X, File, Trash2, Forward, MoreVertical, Sparkles
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { ChatAssistantService } from "@/services/ai/ChatAssistantService";
 
 interface Message {
   id: string;
@@ -58,6 +59,32 @@ export default function MessagesPage() {
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const [forwardingMessage, setForwardingMessage] = useState<Message | null>(null);
   const [showForwardModal, setShowForwardModal] = useState(false);
+  const [quickReplies, setQuickReplies] = useState<string[]>([]);
+  const [showCollaborationSummary, setShowCollaborationSummary] = useState(false);
+  const [collaborationSummary, setCollaborationSummary] = useState<{
+    summary: string;
+    actionItems: string[];
+    nextStep: string;
+  }>({ summary: "", actionItems: [], nextStep: "" });
+
+  useEffect(() => {
+    if (messages.length > 0 && activeUser) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg.sender_id === activeUser.id && lastMsg.content) {
+        ChatAssistantService.generateQuickReplies({
+          partnerName: activeUser.full_name,
+          lastMessage: lastMsg.content,
+        }).then((replies) => setQuickReplies(replies));
+      } else {
+        setQuickReplies([]);
+      }
+      const summary = ChatAssistantService.summarizeCollaboration(messages);
+      setCollaborationSummary(summary);
+    } else {
+      setQuickReplies([]);
+      setCollaborationSummary({ summary: "", actionItems: [], nextStep: "" });
+    }
+  }, [messages, activeUser]);
 
   useEffect(() => {
     activeUserRef.current = activeUser;
@@ -440,7 +467,55 @@ export default function MessagesPage() {
                         : <span className="text-gray-400">@{activeUser.username}</span>}
                   </p>
                 </div>
+                {/* AI Collaboration Summary Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowCollaborationSummary(!showCollaborationSummary)}
+                  className="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:text-indigo-400 transition-colors flex items-center gap-1.5 border border-indigo-100 dark:border-indigo-900/40"
+                  title="AI Collaboration Summary"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                  <span className="hidden sm:inline">AI Summary</span>
+                </button>
               </div>
+
+              {/* AI Collaboration Insights Card */}
+              {showCollaborationSummary && (
+                <div className="p-4 mx-4 mt-3 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 dark:from-indigo-950/30 dark:to-purple-950/30 dark:border-indigo-900/40 text-xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-purple-500" />
+                      Collaboration Plan & Insights
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowCollaborationSummary(false)}
+                      className="text-gray-400 hover:text-gray-600 p-1"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-gray-700 dark:text-gray-300">{collaborationSummary.summary}</p>
+                  {collaborationSummary.actionItems.length > 0 && (
+                    <div className="space-y-1 pt-1">
+                      <span className="font-bold text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Suggested Action Items:
+                      </span>
+                      <ul className="list-disc list-inside space-y-0.5 text-gray-700 dark:text-gray-300">
+                        {collaborationSummary.actionItems.map((item, i) => (
+                          <li key={i}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {collaborationSummary.nextStep && (
+                    <div className="pt-1 text-gray-500 text-[11px]">
+                      <span className="font-semibold text-indigo-600 dark:text-indigo-400">Next Step: </span>
+                      {collaborationSummary.nextStep}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {isLoading && <div className="text-center text-sm text-gray-400">Loading messages...</div>}
@@ -528,6 +603,25 @@ export default function MessagesPage() {
                       <X className="w-4 h-4 text-gray-500" />
                     </button>
                   </div>
+                </div>
+              )}
+
+              {/* AI Quick Reply Chips */}
+              {quickReplies.length > 0 && !selectedFile && (
+                <div className="px-4 py-2 flex flex-wrap items-center gap-1.5 border-t border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/40">
+                  <span className="text-[10px] font-semibold text-gray-400 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-500" /> Quick Reply:
+                  </span>
+                  {quickReplies.map((reply, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setNewMessage(reply)}
+                      className="text-xs px-2.5 py-1 rounded-full bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:text-indigo-600 transition-colors shadow-2xs"
+                    >
+                      {reply}
+                    </button>
+                  ))}
                 </div>
               )}
 

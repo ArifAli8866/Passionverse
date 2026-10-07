@@ -19,22 +19,27 @@ export interface User {
 export interface Post {
   id: string;
   userId: string;
-  type: "image" | "text" | "project";
+  type: "image" | "text" | "project" | "video";
   content: string;
-  image: string;
-  caption: string;
+  image?: string;
+  imageUrl?: string;
+  caption?: string;
   projectTitle?: string;
   projectDescription?: string;
   githubLink?: string;
   demoLink?: string;
-  likes: number;
-  comments: number;
-  shares: number;
-  saves: number;
+  techStack?: string;
+  likes?: number;
+  likesCount?: number;
+  comments?: number;
+  commentsCount?: number;
+  shares?: number;
+  saves?: number;
   createdAt: string;
   user: User;
   isLiked?: boolean;
   isSaved?: boolean;
+  projectAiAnalysis?: ProjectAiAnalysis;
 }
 
 export interface Comment {
@@ -109,3 +114,101 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+// ============================================
+// AI PASSIONVERSE INTERFACES
+// ============================================
+
+export interface ScoredPassion {
+  name: string;
+  score: number; // 0 - 100
+  category: string;
+  icon?: string;
+  confidence?: number;
+}
+
+export interface AIPassionProfile {
+  id?: string;
+  userId: string;
+  summary: string;
+  passions: ScoredPassion[];
+  skills: string[];
+  technologies: string[];
+  currentlyLearning: string[];
+  lookingFor: string[];
+  goals: string[];
+  lastAnalyzedAt?: string;
+  embedding?: number[];
+}
+
+export interface PassionGuardVerdict {
+  relevanceScore: number; // 0 - 100
+  status: "APPROVED" | "NEEDS_REVISION";
+  detectedTopics: string[];
+  primaryCategory: string;
+  feedback: string;
+  suggestions: string[];
+  confidence: number;
+}
+
+export interface PassionMatch {
+  user: User;
+  matchScore: number; // 0 - 100
+  headline: string;
+  explanation: string;
+  sharedPassions: string[];
+  complementarySkills: string[];
+  collaborationPotential: "High" | "Very High" | "Exceptional";
+}
+
+export interface ProjectAiAnalysis {
+  id?: string;
+  postId: string;
+  summary: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  domain: string;
+  technologies: string[];
+  requiredSkills: string[];
+  learningOpportunities: string[];
+  collaborationRoles: string[];
+}
+
+export interface ProjectMatch {
+  post: Post;
+  matchScore: number; // 0 - 100
+  headline: string;
+  explanation: string;
+  matchingSkills: string[];
+  skillsToLearn: string[];
+  difficulty: string;
+}
+
+export interface RoadmapMilestone {
+  step: number;
+  title: string;
+  description: string;
+  skills: string[];
+  suggestedProjects: string[];
+  estimatedWeeks?: number;
+}
+
+export interface PassionRoadmap {
+  topic: string;
+  level: "Beginner" | "Intermediate" | "Advanced";
+  estimatedDuration: string;
+  milestones: RoadmapMilestone[];
+  suggestedCommunities: string[];
+}
+
+export interface GeneratedProjectIdea {
+  title: string;
+  description: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  technologies: string[];
+  skillsToLearn: string[];
+  estimatedEffort: string;
+  roadmap: string[];
+  extensions: string[];
+  collaboratorRoles: string[];
+}
+

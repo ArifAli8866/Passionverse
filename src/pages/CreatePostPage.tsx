@@ -16,7 +16,14 @@ import {
   Upload,
   X,
   Video,
+  Sparkles,
 } from "lucide-react";
+import { PassionGuardService } from "@/services/ai/PassionGuardService";
+import { GitHubIntelligenceService } from "@/services/ai/GitHubIntelligenceService";
+import { EmbeddingService } from "@/services/ai/EmbeddingService";
+import PassionGuardModal from "@/components/ai/PassionGuardModal";
+import AIPostAssistant from "@/components/ai/AIPostAssistant";
+import type { PassionGuardVerdict } from "@/types";
 
 type PostType = "image" | "text" | "project" | "video";
 
@@ -38,6 +45,12 @@ export default function CreatePostPage() {
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // AI PassionGuard State
+  const [showGuardModal, setShowGuardModal] = useState(false);
+  const [guardVerdict, setGuardVerdict] = useState<PassionGuardVerdict | null>(null);
+  const [isEvaluatingGuard, setIsEvaluatingGuard] = useState(false);
+  const [isAnalyzingGithub, setIsAnalyzingGithub] = useState(false);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,6 +98,40 @@ export default function CreatePostPage() {
     return urlData.publicUrl;
   };
 
+  // Feature 9: GitHub Intelligence analysis helper
+  const handleAnalyzeGithub = async (urlToAnalyze?: string) => {
+    const targetUrl = urlToAnalyze || githubLink;
+    if (!targetUrl.trim()) {
+      toast.error("Please enter a GitHub repository URL first!");
+      return;
+    }
+    setIsAnalyzingGithub(true);
+    try {
+      const analysis = await GitHubIntelligenceService.analyzeRepo(targetUrl);
+      if (analysis) {
+        if (!projectTitle.trim() && analysis.name) {
+          setProjectTitle(analysis.name);
+        }
+        if (!projectDescription.trim() && analysis.description) {
+          setProjectDescription(analysis.description);
+        }
+        if (analysis.detectedSkills.length > 0) {
+          const currentSkills = techStack ? techStack.split(/[,/| ]+/).map((s) => s.trim()) : [];
+          const merged = Array.from(new Set([...currentSkills, ...analysis.detectedSkills])).filter(Boolean);
+          setTechStack(merged.join(", "));
+        }
+        toast.success(`Analyzed repository: ${analysis.name} (${analysis.language})`);
+      } else {
+        toast.error("Could not fetch public repository details");
+      }
+    } catch {
+      toast.error("GitHub analysis temporarily unavailable");
+    } finally {
+      setIsAnalyzingGithub(false);
+    }
+  };
+
+  // Step 1: Form Submit intercepts and runs PassionGuard AI
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -97,6 +144,41 @@ export default function CreatePostPage() {
       return;
     }
 
+    // Run PassionGuard evaluation
+    setIsEvaluatingGuard(true);
+    setShowGuardModal(true);
+
+    try {
+      const verdict = await PassionGuardService.evaluatePost({
+        type: postType,
+        content: content.trim(),
+        caption,
+        projectTitle,
+        projectDescription,
+        techStack,
+        authorPassions: user.hobbies,
+      });
+      setGuardVerdict(verdict);
+    } catch {
+      // Graceful fallback: allow posting if evaluation throws
+      setGuardVerdict({
+        relevanceScore: 65,
+        status: "APPROVED",
+        detectedTopics: ["Community Showcase"],
+        primaryCategory: "General",
+        feedback: "Post ready to publish.",
+        suggestions: [],
+        confidence: 0.8,
+      });
+    } finally {
+      setIsEvaluatingGuard(false);
+    }
+  };
+
+  // Step 2: Confirmed publish after PassionGuard review
+  const handleConfirmedPublish = async () => {
+    if (!user) return;
+    setShowGuardModal(false);
     setIsSubmitting(true);
     setUploadProgress(0);
 
@@ -130,9 +212,55 @@ export default function CreatePostPage() {
         postData.tech_stack = techStack || null;
       }
 
-      setUploadProgress(90);
-      const { error } = await supabase.from("posts").insert(postData);
+      setUploadProgress(85);
+      const { data: newPost, error } = await supabase
+        .from("posts")
+        .insert(postData)
+        .select()
+        .single();
       if (error) throw error;
+
+      // Persist Post AI Analysis / Audit in background
+      if (newPost && guardVerdict) {
+        try {
+          await supabase.from("post_ai_analysis").insert({
+            post_id: newPost.id,
+            relevance_score: guardVerdict.relevanceScore,
+            detected_topics: guardVerdict.detectedTopics,
+            status: guardVerdict.status,
+            feedback: guardVerdict.feedback,
+            suggestions: guardVerdict.suggestions,
+          });
+        } catch {
+          // Soft fail
+        }
+
+        // If project post, generate & store project AI analysis
+        if (postType === "project") {
+          try {
+            const projectText = `${projectTitle} ${projectDescription} ${techStack || ""}`;
+            const embedding = await EmbeddingService.generateEmbedding(projectText);
+            const embeddingSql = EmbeddingService.vectorToSql(embedding);
+
+            const techs = techStack
+              ? techStack.split(/[,/| ]+/).map((t) => t.trim()).filter(Boolean)
+              : guardVerdict.detectedTopics;
+
+            await supabase.from("project_ai_analysis").insert({
+              post_id: newPost.id,
+              summary: projectDescription || content.slice(0, 150),
+              difficulty: "Intermediate",
+              domain: guardVerdict.primaryCategory,
+              technologies: techs,
+              required_skills: techs.slice(0, 4),
+              learningOpportunities: ["Hands-on project experience", "Architecture design"],
+              embedding: embeddingSql as any,
+            });
+          } catch {
+            // Soft fail
+          }
+        }
+      }
 
       setUploadProgress(100);
       toast.success("Post published successfully!");
@@ -203,6 +331,15 @@ export default function CreatePostPage() {
               }
               rows={4}
               className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-indigo-400"
+            />
+
+            {/* AI Post Assistant (Feature 8) */}
+            <AIPostAssistant
+              content={content}
+              type={postType}
+              techStack={techStack}
+              onApplyContent={(newContent) => setContent(newContent)}
+              onAppendTags={(tags) => setContent((prev) => `${prev} ${tags}`)}
             />
 
             {/* Image Upload */}
@@ -300,7 +437,19 @@ export default function CreatePostPage() {
                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="url" value={githubLink} onChange={(e) => setGithubLink(e.target.value)}
                       placeholder="GitHub Link (optional)"
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+                      className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-24 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100" />
+                    {githubLink.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => handleAnalyzeGithub()}
+                        disabled={isAnalyzingGithub}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-200 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                        title="Auto-fill details using GitHub public intelligence"
+                      >
+                        <Sparkles className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                        {isAnalyzingGithub ? "Syncing..." : "AI Sync"}
+                      </button>
+                    )}
                   </div>
                   <div className="flex-1 relative">
                     <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -339,7 +488,7 @@ export default function CreatePostPage() {
                 <Button type="button" variant="ghost" size="md" onClick={() => navigate("/feed")}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" size="md" isLoading={isSubmitting}
+                <Button type="submit" variant="primary" size="md" isLoading={isSubmitting || isEvaluatingGuard}
                   disabled={postType === "text" && !content.trim()}>
                   {postType === "project" ? "Publish Project" : "Publish Post"}
                 </Button>
@@ -347,6 +496,16 @@ export default function CreatePostPage() {
             </div>
           </Card>
         </form>
+
+        {/* PassionGuard Review Modal (Feature 2) */}
+        <PassionGuardModal
+          isOpen={showGuardModal}
+          verdict={guardVerdict}
+          isEvaluating={isEvaluatingGuard}
+          onProceed={handleConfirmedPublish}
+          onRevise={() => setShowGuardModal(false)}
+          onClose={() => setShowGuardModal(false)}
+        />
       </div>
     </AppLayout>
   );
