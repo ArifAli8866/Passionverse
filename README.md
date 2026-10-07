@@ -47,7 +47,7 @@ Built with React, Vite, TypeScript, Tailwind CSS, Supabase (Auth + PostgreSQL + 
 
 ## 📁 Folder Structure
 
-```
+`
 passionverse/
 ├── database/
 │   └── schema.sql            # Complete Supabase schema + RLS + triggers
