@@ -71,9 +71,7 @@ passionverse/
 ├── .env.example
 ├── database/schema.sql
 └── package.json
-```
-
----
+``
 
 ## 🚀 Getting Started (Local Development)
 
@@ -90,10 +88,8 @@ npm install
 ```
 
 ### 3. Run the Dev Server
-
-```bash
+bash
 npm run dev
-```
 
 Open `http://localhost:5173`
 
