@@ -134,8 +134,7 @@ Open `http://localhost:5173`
    - `post-images` — for post images
 3. Add this storage policy (SQL Editor) so authenticated users can upload:
 
-```sql
--- Allow authenticated users to upload to storage buckets
+`` Allow authenticated users to upload to storage buckets
 CREATE POLICY "Authenticated users can upload images"
 ON storage.objects FOR INSERT
 TO authenticated
