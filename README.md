@@ -197,7 +197,7 @@ Restart your dev server (`npm run dev`). Your app is now connected to Supabase! 
    - **Do NOT** initialize with README/license (we already have them).
 2. In your terminal, from the project folder, run:
 
-```bash
+``bash
 # Initialize git
 git init
 
@@ -215,10 +215,10 @@ git remote add origin https://github.com/YOUR-USERNAME/passionverse.git
 
 # Push to GitHub
 git push -u origin main
-```
+``
 
 > If you haven't configured Git auth, GitHub now recommends using the **GitHub CLI**:
-> ```bash
+> ``bash
 > gh auth login
 > gh repo create passionverse --public --source=. --push
 > ```
