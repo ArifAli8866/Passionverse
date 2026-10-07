@@ -91,31 +91,34 @@ export class MatchingService {
    */
   public static matchProject(project: Post, userProfile: AIPassionProfile): ProjectMatch {
     const projectText = [
-      project.projectTitle || "",
-      project.projectDescription || "",
-      project.techStack || "",
-      project.content || "",
+      project?.projectTitle || "",
+      project?.projectDescription || "",
+      project?.techStack || "",
+      project?.content || "",
     ].join(" ").toLowerCase();
 
     // Matching skills
     const matchingSkills: string[] = [];
     const skillsToLearn: string[] = [];
 
-    userProfile.technologies.forEach((tech) => {
-      if (projectText.includes(tech.toLowerCase())) {
+    const userTechs = Array.isArray(userProfile?.technologies) ? userProfile.technologies : [];
+    const userSkills = Array.isArray(userProfile?.skills) ? userProfile.skills : [];
+
+    userTechs.forEach((tech) => {
+      if (tech && projectText.includes(String(tech).toLowerCase())) {
         matchingSkills.push(tech);
       }
     });
 
-    userProfile.skills.forEach((skill) => {
-      if (projectText.includes(skill.toLowerCase()) && !matchingSkills.includes(skill)) {
+    userSkills.forEach((skill) => {
+      if (skill && projectText.includes(String(skill).toLowerCase()) && !matchingSkills.includes(skill)) {
         matchingSkills.push(skill);
       }
     });
 
     // Extract tech stack items from project
-    if (project.techStack) {
-      project.techStack
+    if (project?.techStack) {
+      String(project.techStack)
         .split(/[,/|•]+/)
         .map((t) => t.trim())
         .filter((t) => t.length > 1)
@@ -128,7 +131,7 @@ export class MatchingService {
 
     // Vector similarity
     let vectorSim = 0.5;
-    if (userProfile.embedding) {
+    if (userProfile?.embedding && Array.isArray(userProfile.embedding)) {
       const projVector = EmbeddingService.generateSemanticFallbackVector(projectText);
       vectorSim = EmbeddingService.cosineSimilarity(userProfile.embedding, projVector);
     }
@@ -155,8 +158,15 @@ export class MatchingService {
       explanation,
       matchingSkills,
       skillsToLearn: skillsToLearn.slice(0, 3),
-      difficulty: (project.projectAiAnalysis?.difficulty as any) || "Intermediate",
+      difficulty: (project?.projectAiAnalysis?.difficulty as any) || "Intermediate",
     };
+  }
+
+  /**
+   * Alias for matchProject to support direct user matching
+   */
+  public static matchProjectToUser(project: Post, userProfile: AIPassionProfile): ProjectMatch {
+    return this.matchProject(project, userProfile);
   }
 
   /**

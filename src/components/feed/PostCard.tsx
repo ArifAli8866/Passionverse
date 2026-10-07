@@ -42,19 +42,25 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
   const [projectMatch, setProjectMatch] = useState<ProjectMatch | null>(null);
 
   useEffect(() => {
-    if (post.type === "project" && user && user.id !== post.userId) {
-      const userProfile = {
-        userId: user.id,
-        summary: user.bio || "",
-        passions: (user.hobbies || []).map((h) => ({ name: h, score: 90, category: "Hobby" })),
-        skills: user.hobbies || [],
-        technologies: user.hobbies || [],
-        currentlyLearning: [],
-        lookingFor: [],
-        goals: [],
-      };
-      const match = MatchingService.matchProjectToUser(post, userProfile as any);
-      setProjectMatch(match);
+    try {
+      const authorId = post.userId || post.user?.id;
+      if (post.type === "project" && user && authorId && user.id !== authorId) {
+        const userHobbies = Array.isArray(user.hobbies) ? user.hobbies : [];
+        const userProfile = {
+          userId: user.id,
+          summary: user.bio || "",
+          passions: userHobbies.map((h) => ({ name: h, score: 90, category: "Hobby" })),
+          skills: userHobbies,
+          technologies: userHobbies,
+          currentlyLearning: [],
+          lookingFor: [],
+          goals: [],
+        };
+        const match = MatchingService.matchProjectToUser(post, userProfile as any);
+        setProjectMatch(match);
+      }
+    } catch (err) {
+      console.warn("Could not calculate project match:", err);
     }
   }, [post, user]);
 
@@ -210,13 +216,13 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
     <div className="post-card card-shine rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
-        <Link to={`/profile/${post.user.username}`} className="flex items-center gap-3 group">
-          <Avatar src={post.user.avatar || undefined} name={post.user.fullName} size="md" />
+        <Link to={`/profile/${post.user?.username || "user"}`} className="flex items-center gap-3 group">
+          <Avatar src={post.user?.avatar || undefined} name={post.user?.fullName || "User"} size="md" />
           <div>
             <p className="font-semibold text-gray-900 group-hover:text-indigo-600 dark:text-gray-100 dark:group-hover:text-indigo-400 transition-colors">
-              {post.user.fullName}
+              {post.user?.fullName || "User"}
             </p>
-            <p className="text-xs text-gray-500">@{post.user.username} · {formatDate(post.createdAt)}</p>
+            <p className="text-xs text-gray-500">@{post.user?.username || "user"} · {formatDate(post.createdAt)}</p>
           </div>
         </Link>
         <div className="relative">

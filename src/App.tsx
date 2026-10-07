@@ -18,6 +18,7 @@ import SavedPostsPage from "@/pages/SavedPostsPage";
 import GroupsPage from "@/pages/GroupsPage";
 import GroupDetailPage from "@/pages/GroupDetailPage";
 import { Toaster } from "react-hot-toast";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -96,7 +97,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <AppRoutes />
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
           <Toaster
             position="top-right"
             toastOptions={{

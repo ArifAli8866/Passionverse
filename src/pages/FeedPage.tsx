@@ -9,6 +9,7 @@ import { supabase } from "@/lib/supabase";
 import type { Post, FeedType } from "@/types";
 import { Flame, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 export default function FeedPage() {
   const { user } = useAuth();
@@ -54,14 +55,16 @@ export default function FeedPage() {
 
       const formatted = (data || []).map((post: any) => ({
         id: post.id,
-        type: post.type,
-        content: post.content,
-        caption: post.caption,
+        userId: post.user_id,
+        type: post.type || "text",
+        content: post.content || "",
+        caption: post.caption || "",
         imageUrl: post.image_url,
         projectTitle: post.project_title,
         projectDescription: post.project_description,
         githubLink: post.github_link,
         demoLink: post.demo_link,
+        techStack: post.tech_stack,
         createdAt: post.created_at,
         likesCount: post.post_likes?.length || 0,
         commentsCount: post.comments?.length || 0,
@@ -69,9 +72,9 @@ export default function FeedPage() {
           (like: any) => like.user_id === user?.id
         ) || false,
         user: {
-          id: post.profiles?.id,
-          fullName: post.profiles?.full_name,
-          username: post.profiles?.username,
+          id: post.profiles?.id || post.user_id,
+          fullName: post.profiles?.full_name || "Creator",
+          username: post.profiles?.username || "creator",
           avatar: post.profiles?.avatar_url || "",
           hobbies: [],
         },
@@ -147,7 +150,9 @@ export default function FeedPage() {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <ErrorBoundary key={post.id}>
+                <PostCard post={post} />
+              </ErrorBoundary>
             ))}
           </div>
         )}
