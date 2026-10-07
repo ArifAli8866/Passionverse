@@ -266,7 +266,7 @@ Your app is live. Every `git push` to `main` automatically redeploys.
 
 ## 🔄 Continuous Deployment Flow
 
-```
+`
 Local Dev → git commit → git push origin main
                           ↓
                      GitHub repo
@@ -274,9 +274,7 @@ Local Dev → git commit → git push origin main
               Vercel auto-builds & deploys
                           ↓
               Live app connected to Supabase
-```
-
----
+``
 
 ## 🔒 Security Features
 
