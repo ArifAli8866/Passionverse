@@ -175,10 +175,10 @@ cp .env.example .env
 
 Then edit `.env`:
 
-```env
+``env
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-public-key-here
-```
+``
 
 Restart your dev server (`npm run dev`). Your app is now connected to Supabase! 🎉
 
