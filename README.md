@@ -150,8 +150,7 @@ CREATE POLICY "Users can delete own images"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (bucket_id IN ('avatars', 'covers', 'post-images') AND auth.uid() = owner);
-```
-
+``
 ### 1.5 Configure Authentication
 #### Email Auth (enabled by default)
 - Go to **Authentication → Providers → Email**.
