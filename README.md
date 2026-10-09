@@ -48,19 +48,18 @@ It can be hard to find your people when your interests span different corners of
 
 ## Find your corner of PassionVerse
 
-```mermaid
+`mermaid
 flowchart LR
     P[Your passions] --> H[Choose hobbies]
     H --> C[Discover creators]
     C --> S[Share a story or project]
     S --> R[React, comment, and connect]
     R --> P
-
     classDef start fill:#3A1D4B,stroke:#FB7185,color:#fff,stroke-width:2px;
     classDef step fill:#201D3C,stroke:#A78BFA,color:#F5F3FF;
     class P start;
     class H,C,S,R step;
-```
+
 
 ## Tech stack
 
@@ -81,7 +80,7 @@ flowchart LR
 
 ### How the pieces fit together
 
-```mermaid
+`mermaid
 flowchart LR
     VISITOR[Community members] --> APP[React + Vite app]
     APP --> AUTH[Supabase Auth]
@@ -90,18 +89,17 @@ flowchart LR
     APP <--> LIVE[Supabase Realtime]
     DB --> FEED[Profiles, hobbies, posts, follows]
     DB --> SOCIAL[Comments, messages, notifications]
-
     classDef client fill:#261B3C,stroke:#C084FC,color:#fff,stroke-width:2px;
     classDef supa fill:#15352F,stroke:#4ADE80,color:#F0FDF4;
     classDef data fill:#33202D,stroke:#FB7185,color:#FFF1F2;
     class VISITOR,APP client;
     class AUTH,FILES,LIVE supa;
     class DB,FEED,SOCIAL data;
-```
+
 
 ## Project structure
 
-```text
+``text
 passionverse/
 ├── database/
 │   └── schema.sql              # Supabase tables, RLS policies, triggers, hobby seed data
@@ -124,7 +122,7 @@ passionverse/
 │   └── main.tsx                # App entry point
 ├── .env.example
 └── package.json
-```
+`
 
 ## Getting started
 
@@ -138,11 +136,10 @@ passionverse/
 
 Replace `YOUR_USERNAME` with the GitHub account or organization that hosts the project:
 
-```bash
+``bash
 git clone https://github.com/YOUR_USERNAME/passionverse.git
 cd passionverse
-```
-
+`
 ### 2. Install dependencies
 
 ```bash
@@ -203,7 +200,7 @@ The app's setup expects these image buckets to be public. Public buckets make up
 
 If your schema does not already create Storage policies, add policies that match the app's upload paths. The following example assumes each upload is stored under a folder named for the signed-in user's ID, for example `<user-id>/avatar.png`. **Adjust the path rule if the app uploads to a different folder layout, and don't create duplicate policies if `schema.sql` already defines them.**
 
-```sql
+``sql
 -- Allow public reads from the app's image buckets.
 CREATE POLICY "PassionVerse images are publicly readable"
 ON storage.objects FOR SELECT
@@ -239,8 +236,7 @@ USING (
   bucket_id IN ('avatars', 'covers', 'post-images')
   AND (storage.foldername(name))[1] = auth.uid()::text
 );
-```
-
+``
 Test uploads, reads, updates, and deletes with more than one account before deploying. Storage policies should reflect the actual file paths used by the app.
 
 ### 4. Configure authentication
@@ -270,7 +266,7 @@ In Supabase, open **Authentication → URL Configuration**:
 
 Create an empty repository on GitHub, then run these commands from the project directory. Replace `YOUR_USERNAME` with the repository owner:
 
-```bash
+``bash
 git init
 git add .
 git commit -m "feat: initial PassionVerse community"
