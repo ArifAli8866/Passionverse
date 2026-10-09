@@ -273,14 +273,11 @@ git commit -m "feat: initial PassionVerse community"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/passionverse.git
 git push -u origin main
-```
-
+`
 If you use GitHub CLI, you can authenticate and create/push the repository with:
-
-```bash
+bash
 gh auth login
 gh repo create passionverse --public --source=. --push
-```
 
 ### 2. Import the repository into Vercel
 
@@ -298,12 +295,10 @@ gh repo create passionverse --public --source=. --push
 ### 3. Add production environment variables
 
 In the Vercel project settings, add:
-
-```text
+text
 VITE_SUPABASE_URL=https://your-project-id.supabase.co
 VITE_SUPABASE_ANON_KEY=your-supabase-publishable-anon-key
-```
-
+``
 Deploy the project. Add the same values for any Vercel environments you plan to use, then redeploy after changing environment variables.
 
 ### 4. Allow the deployed URL in Supabase
