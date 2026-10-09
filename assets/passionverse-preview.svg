@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">PassionVerse community feed illustration</title>
+  <desc id="desc">An illustrative social community dashboard with navigation, hobby filters, creator posts, suggested people, and trending interests.</desc>
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1280" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171222"/>
+      <stop offset="1" stop-color="#21142A"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FDA4AF"/>
+      <stop offset="1" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="art" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FDBA74"/>
+      <stop offset=".53" stop-color="#FB7185"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="landscape" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#5E4279"/>
+      <stop offset="1" stop-color="#2B2443"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0B0610" flood-opacity=".2"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="760" rx="25" fill="url(#canvas)"/>
+  <rect x=".5" y=".5" width="1279" height="759" rx="24.5" stroke="#FFFFFF" stroke-opacity=".1"/>
+  <rect width="1280" height="75" rx="25" fill="#130F1D"/>
+  <path d="M0 75h1280" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <circle cx="46" cy="38" r="17" fill="#382244"/>
+  <path d="M46 26c1.7 6.8 4.2 9.3 11 11-6.8 1.7-9.3 4.2-11 11-1.7-6.8-4.2-9.3-11-11 6.8-1.7 9.3-4.2 11-11Z" fill="url(#brand)"/>
+  <text x="74" y="44" fill="#FFF7FB" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="17" font-weight="800" letter-spacing="1.4">PASSIONVERSE</text>
+  <rect x="376" y="20" width="407" height="37" rx="11" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".09"/>
+  <circle cx="396" cy="38.5" r="6" stroke="#A89AAF" stroke-width="1.5"/>
+  <path d="m400.5 43 4 4" stroke="#A89AAF" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="416" y="43" fill="#81768B" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10">Search people, hobbies, and posts...</text>
+  <circle cx="1158" cy="37" r="16" fill="#292033"/>
+  <path d="M1158 28v18m-9-9h18" stroke="#C4B5FD" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="1204" cy="37" r="16" fill="#292033"/>
+  <path d="M1204 30c-4 0-7 3.2-7 7.2v3.5l-2 2.5h18l-2-2.5v-3.5c0-4-3-7.2-7-7.2Z" stroke="#E9D5FF" stroke-width="1.3" stroke-linejoin="round"/>
+  <circle cx="1210" cy="28" r="3.5" fill="#FB7185" stroke="#130F1D" stroke-width="1.5"/>
+  <circle cx="1246" cy="37" r="17" fill="#E9A9C3"/>
+  <text x="1246" y="41" text-anchor="middle" fill="#4B2542" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="800">JD</text>
+  <rect x="0" y="75" width="232" height="685" fill="#130F1D"/>
+  <path d="M232 75v685" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="27" y="116" fill="#72677B" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700" letter-spacing="1.5">YOUR COMMUNITY</text>
+  <rect x="18" y="130" width="196" height="41" rx="11" fill="#362341"/>
+  <rect x="18" y="130" width="3" height="41" rx="1.5" fill="#FB8AAB"/>
+  <path d="M39 143v15m-7.5-7.5h15m-12.8-5.3 10.6 10.6m0-10.6-10.6 10.6" stroke="#FDA4AF" stroke-width="1.3" stroke-linecap="round"/>
+  <text x="62" y="155" fill="#FFF1F2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="700">For you</text>
+  <g fill="#AA9CAF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11">
+    <circle cx="40" cy="195" r="7" stroke="#AA9CAF" stroke-width="1.2"/><path d="M40 191v8m-4-4h8" stroke="#AA9CAF" stroke-width="1.1"/>
+    <text x="62" y="199">Following</text>
+    <path d="M33 228c1-4 13-4 14 0v10H33v-10Zm1-4a5 5 0 1 0 10 0 5 5 0 0 0-10 0Z" stroke="#AA9CAF" stroke-width="1.2"/>
+    <text x="62" y="235">Discover</text>
+    <path d="M34 260h12v12H34zM37 257h12v12" stroke="#AA9CAF" stroke-width="1.2" stroke-linejoin="round"/>
+    <text x="62" y="269">Saved posts</text>
+  </g>
+  <text x="27" y="318" fill="#72677B" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700" letter-spacing="1.5">YOUR HOBBIES</text>
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5">
+    <circle cx="38" cy="342" r="4" fill="#C4B5FD"/><text x="51" y="346" fill="#C8BDCD">Programming</text>
+    <circle cx="38" cy="371" r="4" fill="#FDA4AF"/><text x="51" y="375" fill="#C8BDCD">Photography</text>
+    <circle cx="38" cy="400" r="4" fill="#FDBA74"/><text x="51" y="404" fill="#C8BDCD">Music</text>
+    <circle cx="38" cy="429" r="4" fill="#6EE7B7"/><text x="51" y="433" fill="#C8BDCD">Fitness</text>
+    <circle cx="38" cy="458" r="4" fill="#67E8F9"/><text x="51" y="462" fill="#C8BDCD">Illustration</text>
+  </g>
+  <rect x="25" y="491" width="180" height="34" rx="9" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="41" y="512" fill="#D8B4FE" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14">＋</text>
+  <text x="62" y="512" fill="#AB9DB1" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10">Explore hobbies</text>
+  <rect x="258" y="105" width="673" height="67" rx="15" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <circle cx="291" cy="138.5" r="19" fill="#E9A9C3"/>
+  <text x="291" y="143" text-anchor="middle" fill="#4B2542" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="800">JD</text>
+  <text x="322" y="135" fill="#83778D" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11">What are you passionate about?</text>
+  <text x="322" y="152" fill="#62596C" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Share a thought, a work in progress, or a small win.</text>
+  <rect x="807" y="123" width="102" height="31" rx="9" fill="url(#brand)"/>
+  <text x="858" y="143" text-anchor="middle" fill="#FFFFFF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="700">＋  Create post</text>
+  <rect x="258" y="190" width="673" height="45" rx="12" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".07"/>
+  <rect x="270" y="198" width="87" height="29" rx="9" fill="#48304E"/>
+  <text x="313.5" y="217" text-anchor="middle" fill="#FFE4E6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700">For you</text>
+  <text x="388" y="217" fill="#A99CB2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Following</text>
+  <text x="479" y="217" fill="#A99CB2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Programming</text>
+  <text x="585" y="217" fill="#A99CB2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Photography</text>
+  <text x="703" y="217" fill="#A99CB2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Music</text>
+  <path d="m888 207 4 5 4-5" stroke="#A99CB2" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <g filter="url(#shadow)">
+    <rect x="258" y="253" width="673" height="427" rx="16" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".08"/>
+    <rect x="951" y="105" width="299" height="221" rx="15" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".08"/>
+    <rect x="951" y="344" width="299" height="216" rx="15" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".08"/>
+  </g>
+  <circle cx="290" cy="284" r="17" fill="#D6A8E7"/>
+  <text x="290" y="288" text-anchor="middle" fill="#402044" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="800">AC</text>
+  <text x="318" y="280" fill="#F7ECF6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10.5" font-weight="700">Avery Chen</text>
+  <text x="318" y="296" fill="#92859A" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5">2 hours ago · Photography</text>
+  <circle cx="901" cy="282" r="2" fill="#AA9CAF"/>
+  <circle cx="908" cy="282" r="2" fill="#AA9CAF"/>
+  <circle cx="915" cy="282" r="2" fill="#AA9CAF"/>
+  <text x="280" y="326" fill="#F1E9F2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10">Finally took my little film camera out on the coast. Sometimes the best frame is the one</text>
+  <text x="280" y="342" fill="#F1E9F2" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10">you almost didn't stop for. ✨</text>
+  <rect x="280" y="357" width="629" height="190" rx="12" fill="url(#art)"/>
+  <circle cx="773" cy="400" r="94" fill="#FCE7F3" fill-opacity=".15"/>
+  <circle cx="486" cy="424" r="62" fill="#FFF7ED" fill-opacity=".12"/>
+  <path d="M280 485c77-59 119-40 171-6 48 32 88 27 153-21 77-57 129-42 196-2 43 26 71 26 109-1v92H280v-62Z" fill="url(#landscape)"/>
+  <path d="M280 520c91-42 151-32 223-3 65 26 112 24 179-7 76-36 150-41 227 7v30H280v-27Z" fill="#2A2341" fill-opacity=".92"/>
+  <path d="M504 484v63m-17-14 17-48 17 48m-26-23h18m-23 12h28" stroke="#FDE68A" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity=".84"/>
+  <path d="M824 454c-12-24-12-39 0-61m0 61c11-20 23-27 38-30m-38 30c-13-17-28-21-43-19" stroke="#FFF1F2" stroke-width="2.1" stroke-linecap="round" opacity=".76"/>
+  <circle cx="823" cy="392" r="10" fill="#FFF1F2" fill-opacity=".78"/>
+  <rect x="281" y="559" width="91" height="20" rx="10" fill="#38243C"/>
+  <text x="326.5" y="572" text-anchor="middle" fill="#FDA4AF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5" font-weight="600">Photography</text>
+  <path d="M283 613c2-8 13-8 15 0v8h-15v-8Zm1.5-9a6 6 0 1 0 12 0 6 6 0 0 0-12 0Z" stroke="#FB8AAB" stroke-width="1.5"/>
+  <text x="309" y="617" fill="#C9B9CC" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">18</text>
+  <path d="M352 607c-5-5-12 1-5 8l5 4 5-4c7-7 0-13-5-8Z" stroke="#C9B9CC" stroke-width="1.4" stroke-linejoin="round"/>
+  <text x="370" y="617" fill="#C9B9CC" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Like</text>
+  <path d="M423 606h13a5 5 0 0 1 5 5v6h-9l-5 4v-4h-4a5 5 0 0 1-5-5v-1a5 5 0 0 1 5-5Z" stroke="#C9B9CC" stroke-width="1.3" stroke-linejoin="round"/>
+  <text x="449" y="617" fill="#C9B9CC" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Comment</text>
+  <path d="M898 605v15m-7-7.5h14m-12-5.3 10 10.6m0-10.6-10 10.6" stroke="#C9B9CC" stroke-width="1.3" stroke-linecap="round"/>
+  <text x="980" y="138" fill="#F7ECF6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700">Trending hobbies</text>
+  <text x="1223" y="138" text-anchor="end" fill="#C084FC" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5">Explore all →</text>
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif">
+    <rect x="978" y="158" width="242" height="37" rx="10" fill="#2D2336"/>
+    <circle cx="998" cy="176.5" r="10" fill="#4A335B"/><text x="998" y="180" text-anchor="middle" fill="#E9D5FF" font-size="10">⌘</text>
+    <text x="1017" y="174" fill="#EADDEB" font-size="9" font-weight="600">Programming</text><text x="1017" y="186" fill="#8F8298" font-size="7.5">2.4k curious minds</text>
+    <rect x="978" y="203" width="242" height="37" rx="10" fill="#2D2336"/>
+    <circle cx="998" cy="221.5" r="10" fill="#55303F"/><text x="998" y="225" text-anchor="middle" fill="#FDA4AF" font-size="10">◉</text>
+    <text x="1017" y="219" fill="#EADDEB" font-size="9" font-weight="600">Photography</text><text x="1017" y="231" fill="#8F8298" font-size="7.5">1.8k curious minds</text>
+    <rect x="978" y="248" width="242" height="37" rx="10" fill="#2D2336"/>
+    <circle cx="998" cy="266.5" r="10" fill="#553E27"/><text x="998" y="270" text-anchor="middle" fill="#FDBA74" font-size="10">♫</text>
+    <text x="1017" y="264" fill="#EADDEB" font-size="9" font-weight="600">Music</text><text x="1017" y="276" fill="#8F8298" font-size="7.5">1.2k curious minds</text>
+  </g>
+  <text x="978" y="378" fill="#F7ECF6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700">People to meet</text>
+  <text x="1223" y="378" text-anchor="end" fill="#C084FC" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5">See more →</text>
+  <circle cx="1000" cy="414" r="15" fill="#A6D6B9"/>
+  <text x="1000" y="418" text-anchor="middle" fill="#1D4332" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="800">MK</text>
+  <text x="1024" y="411" fill="#F4EAF4" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700">Mika Rivera</text>
+  <text x="1024" y="425" fill="#96899F" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="7.5">Maker · 3 shared hobbies</text>
+  <rect x="1165" y="402" width="55" height="24" rx="8" fill="#3D2A47"/>
+  <text x="1192.5" y="418" text-anchor="middle" fill="#FBCFE8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8" font-weight="600">Follow</text>
+  <path d="M978 444h244" stroke="#FFFFFF" stroke-opacity=".07"/>
+  <circle cx="1000" cy="469" r="15" fill="#E4B1C6"/>
+  <text x="1000" y="473" text-anchor="middle" fill="#512A41" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="800">AC</text>
+  <text x="1024" y="466" fill="#F4EAF4" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700">Avery Chen</text>
+  <text x="1024" y="480" fill="#96899F" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="7.5">Photographer · 2 shared hobbies</text>
+  <rect x="1165" y="457" width="55" height="24" rx="8" fill="#3D2A47"/>
+  <text x="1192.5" y="473" text-anchor="middle" fill="#FBCFE8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8" font-weight="600">Follow</text>
+  <text x="979" y="528" fill="#8D8197" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8">A place for the things you love.</text>
+  <rect x="951" y="580" width="299" height="100" rx="15" fill="#201B2A" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <circle cx="987" cy="618" r="15" fill="#35233F"/>
+  <path d="M987 609c1.3 5.2 3.1 7 8.5 8.5-5.4 1.3-7.2 3.1-8.5 8.5-1.3-5.4-3.1-7.2-8.5-8.5 5.4-1.5 7.2-3.3 8.5-8.5Z" fill="#C4B5FD"/>
+  <text x="1012" y="614" fill="#F7ECF6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="700">Your passions, together.</text>
+  <text x="1012" y="632" fill="#A194AA" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5">Discover a new idea or meet a future collaborator.</text>
+  <rect x="977" y="648" width="247" height="19" rx="9.5" fill="#34243D"/>
+  <text x="1100.5" y="661" text-anchor="middle" fill="#E9D5FF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8" font-weight="600">Connect through passion ✦</text>
+</svg>

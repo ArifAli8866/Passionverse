@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="500" viewBox="0 0 1440 500" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">PassionVerse — Connect Through Passion</title>
+  <desc id="desc">A vibrant purple and coral banner for PassionVerse with hobby tags, friendly community cards, and the tagline Connect Through Passion.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="10" x2="1434" y2="500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#211337"/>
+      <stop offset=".48" stop-color="#321943"/>
+      <stop offset="1" stop-color="#521D4A"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FDA4AF"/>
+      <stop offset="1" stop-color="#FB7185"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FDBA74"/>
+      <stop offset="1" stop-color="#FB7185"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#C4B5FD"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(309 246 -234 294 1167 201)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB7185" stop-opacity=".37"/>
+      <stop offset="1" stop-color="#A855F7" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="27" height="27" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="#FBCFE8" fill-opacity=".19"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#10091B" flood-opacity=".32"/>
+    </filter>
+  </defs>
+  <rect width="1440" height="500" rx="30" fill="url(#bg)"/>
+  <rect width="1440" height="500" rx="30" fill="url(#glow)"/>
+  <rect x="722" width="718" height="500" fill="url(#dots)" opacity=".72"/>
+  <circle cx="1315" cy="82" r="4" fill="#FBCFE8" fill-opacity=".8"/>
+  <circle cx="1251" cy="395" r="3" fill="#FDBA74" fill-opacity=".85"/>
+  <circle cx="854" cy="50" r="2.5" fill="#DDD6FE"/>
+  <path d="M0 398c208-55 333 51 552 7 220-44 390-30 523 18 131 47 230 5 365-28v105H0V398Z" fill="#140D23" fill-opacity=".38"/>
+  <g transform="translate(77 72)">
+    <circle cx="22" cy="22" r="22" fill="#FFFFFF" fill-opacity=".1"/>
+    <path d="M22 8.5c1.9 8.1 5.4 11.6 13.5 13.5-8.1 1.9-11.6 5.4-13.5 13.5C20.1 27.4 16.6 23.9 8.5 22 16.6 20.1 20.1 16.6 22 8.5Z" fill="url(#orange)"/>
+    <circle cx="36.5" cy="8.5" r="3.5" fill="#C4B5FD"/>
+  </g>
+  <text x="136" y="103" fill="#FBCFE8" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="15" font-weight="700" letter-spacing="4">A COMMUNITY BUILT AROUND YOU</text>
+  <text x="77" y="225" fill="#FFFFFF" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="70" font-weight="800" letter-spacing="-3">PASSION</text>
+  <text x="77" y="299" fill="#FFFFFF" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif" font-size="70" font-weight="800" letter-spacing="-3">VERSE</text>
+  <text x="81" y="351" fill="#FFE4E6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="23" font-weight="500">Connect through passion.</text>
+  <text x="81" y="389" fill="#E9D5FF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16" font-weight="500">Find your people. Share what you make. Keep creating.</text>
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="650">
+    <rect x="82" y="420" width="105" height="30" rx="15" fill="#FFFFFF" fill-opacity=".09" stroke="#C4B5FD" stroke-opacity=".36"/>
+    <text x="134.5" y="439" text-anchor="middle" fill="#E9D5FF">✦  CREATORS</text>
+    <rect x="197" y="420" width="95" height="30" rx="15" fill="#FFFFFF" fill-opacity=".09" stroke="#FDA4AF" stroke-opacity=".4"/>
+    <text x="244.5" y="439" text-anchor="middle" fill="#FFE4E6">♡  HOBBIES</text>
+    <rect x="302" y="420" width="108" height="30" rx="15" fill="#FFFFFF" fill-opacity=".09" stroke="#FDBA74" stroke-opacity=".43"/>
+    <text x="356" y="439" text-anchor="middle" fill="#FFEDD5">↗  PROJECTS</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="756" y="67" width="592" height="367" rx="23" fill="#171322" fill-opacity=".94" stroke="#FFFFFF" stroke-opacity=".17"/>
+    <path d="M779 67h546a23 23 0 0 1 23 23v30H756V90a23 23 0 0 1 23-23Z" fill="#FFFFFF" fill-opacity=".035"/>
+    <circle cx="784" cy="93" r="5" fill="#FB7185"/>
+    <circle cx="803" cy="93" r="5" fill="#FDBA74"/>
+    <circle cx="822" cy="93" r="5" fill="#4ADE80"/>
+    <rect x="959" y="82" width="205" height="22" rx="11" fill="#FFFFFF" fill-opacity=".06"/>
+    <text x="1061.5" y="97" text-anchor="middle" fill="#A89BB6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10">passionverse / discover</text>
+    <text x="785" y="157" fill="#FFF7FB" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">Discover your people</text>
+    <text x="785" y="178" fill="#A89BB6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10">A little inspiration from across the community</text>
+    <rect x="785" y="196" width="534" height="57" rx="13" fill="#211B2C" stroke="#FFFFFF" stroke-opacity=".08"/>
+    <circle cx="812" cy="224" r="13" fill="#3B244F"/>
+    <path d="M812 216.5c4.2 0 7.5 3.3 7.5 7.5s-3.3 7.5-7.5 7.5-7.5-3.3-7.5-7.5 3.3-7.5 7.5-7.5Z" stroke="#D8B4FE" stroke-width="1.2"/>
+    <path d="M804.8 226.5c2.6-1.4 11.7-1.4 14.4 0M808.1 219c1.2 2.7 1.2 7.4 0 10m7.8-10c-1.2 2.7-1.2 7.4 0 10" stroke="#D8B4FE" stroke-width="1"/>
+    <text x="836" y="221" fill="#FCE7F3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="700">Trending hobbies</text>
+    <text x="836" y="237" fill="#A89BB6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9">Programming · Photography · Music · Art</text>
+    <rect x="785" y="274" width="250" height="134" rx="15" fill="#211B2C" stroke="#FFFFFF" stroke-opacity=".09"/>
+    <rect x="800" y="289" width="220" height="49" rx="10" fill="#392543"/>
+    <circle cx="825" cy="313" r="13" fill="url(#pink)"/>
+    <path d="M821 313c2.6-5.3 5.4-5.3 8 0-2.6 5.3-5.4 5.3-8 0Z" fill="#FFF1F2"/>
+    <text x="848" y="309" fill="#FFF7FB" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="700">New project showcase</text>
+    <text x="848" y="324" fill="#C4AEC9" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8">from a creator you follow</text>
+    <text x="801" y="361" fill="#FCE7F3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="700">Tiny garden, big joy 🌱</text>
+    <text x="801" y="378" fill="#AA9AAF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8.5">A weekend build inspired by my love of plants...</text>
+    <rect x="801" y="389" width="59" height="14" rx="7" fill="#38243C"/>
+    <text x="830.5" y="399" text-anchor="middle" fill="#FDA4AF" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="7.5" font-weight="600">Gardening</text>
+    <rect x="1051" y="274" width="268" height="134" rx="15" fill="#211B2C" stroke="#FFFFFF" stroke-opacity=".09"/>
+    <text x="1068" y="298" fill="#FCE7F3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="700">People to meet</text>
+    <circle cx="1087" cy="330" r="14" fill="#F9A8D4"/>
+    <text x="1087" y="334" text-anchor="middle" fill="#552142" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="800">A</text>
+    <text x="1110" y="328" fill="#F8E9F3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700">Avery Chen</text>
+    <text x="1110" y="341" fill="#A89BB6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8">Illustrator · 3 shared hobbies</text>
+    <circle cx="1087" cy="371" r="14" fill="#FDBA74"/>
+    <text x="1087" y="375" text-anchor="middle" fill="#62351B" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="800">M</text>
+    <text x="1110" y="369" fill="#F8E9F3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="9" font-weight="700">Mika Rivera</text>
+    <text x="1110" y="382" fill="#A89BB6" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="8">Maker · 2 shared hobbies</text>
+  </g>
+  <path d="M1391 164c0 0-16.5 2.8-19.5 19.5-3-16.7-19.5-19.5-19.5-19.5s16.5-2.8 19.5-19.5c3 16.7 19.5 19.5 19.5 19.5Z" fill="url(#orange)"/>
+  <circle cx="718" cy="364" r="9" fill="#C4B5FD" fill-opacity=".75"/>
+  <circle cx="1401" cy="383" r="4" fill="#FDA4AF"/>
+</svg>
