@@ -22,7 +22,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 
 export default function Navbar() {
@@ -71,7 +71,9 @@ export default function Navbar() {
       })
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const navLinks = [
@@ -221,10 +223,7 @@ export default function Navbar() {
                                 </span>
                               </p>
                               <p className="text-[10px] text-slate-400 mt-0.5">
-                                {new Date(notif.created_at).toLocaleDateString(undefined, {
-                                  month: "short",
-                                  day: "numeric",
-                                })}
+                                {formatDate(notif.created_at)}
                               </p>
                             </div>
                             {!notif.read && (

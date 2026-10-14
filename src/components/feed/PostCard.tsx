@@ -212,13 +212,15 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
     "from-cyan-400 to-blue-500",
     "from-violet-400 to-indigo-500",
   ];
-  const placeholderColor = placeholderColors[post.id.length % placeholderColors.length];
+  const postKey = String(post?.id || "fallback-id");
+  const placeholderColor = placeholderColors[postKey.length % placeholderColors.length];
 
-  const renderFormattedContent = (content: string) => {
+  const renderFormattedContent = (content?: string | null) => {
+    if (!content || typeof content !== "string") return null;
     // Highlight hashtags as in Reference 2 (#amazing #great #lifetime #uiux #machinelearning)
     const parts = content.split(/(#[a-zA-Z0-9_-]+)/g);
     return parts.map((part, index) => {
-      if (part.startsWith("#")) {
+      if (part && part.startsWith("#")) {
         return (
           <Link
             key={index}
@@ -299,9 +301,11 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
             {post.projectTitle && <span className="font-semibold text-slate-700 dark:text-slate-300">· {post.projectTitle}</span>}
           </div>
         )}
-        <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
-          {renderFormattedContent(post.content)}
-        </div>
+        {(post.content || post.caption) && (
+          <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
+            {renderFormattedContent(post.content || post.caption || "")}
+          </div>
+        )}
       </div>
 
       {/* Post Image / Media (Reference 2 style) */}

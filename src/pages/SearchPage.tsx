@@ -89,7 +89,7 @@ export default function SearchPage() {
 
             // Check taxonomy overlap
             const matchedTaxonomy = taxonomy.matchedCategories.filter((cat) =>
-              profileText.toLowerCase().includes(cat.toLowerCase())
+              profileText.toLowerCase().includes(cat.category.name.toLowerCase())
             );
 
             const score = Math.round(

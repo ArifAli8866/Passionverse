@@ -43,7 +43,8 @@ export class MatchingService {
       // Compute vector similarity if candidate has profile
       let vectorScore = 0.55;
       if (currentUserProfile.embedding) {
-        const candidateText = `${candidate.fullName} ${candidate.bio || ""} ${candidate.hobbies.join(" ")}`;
+        const candidateHobbies = Array.isArray(candidate.hobbies) ? candidate.hobbies.join(" ") : "";
+        const candidateText = `${candidate.fullName || ""} ${candidate.bio || ""} ${candidateHobbies}`;
         const candidateVector = EmbeddingService.generateSemanticFallbackVector(candidateText);
         vectorScore = EmbeddingService.cosineSimilarity(currentUserProfile.embedding, candidateVector);
       }
@@ -192,7 +193,7 @@ export class MatchingService {
 
     return {
       postId: post.id,
-      summary: post.projectDescription || post.content.slice(0, 140),
+      summary: post.projectDescription || (post.content ? String(post.content).slice(0, 140) : "") || "Project Details",
       difficulty,
       domain: post.type,
       technologies: Array.from(techs),

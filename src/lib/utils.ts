@@ -5,9 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date): string {
-  const now = new Date();
+export function formatDate(date?: string | Date | null): string {
+  if (!date) return "just now";
   const d = new Date(date);
+  if (isNaN(d.getTime())) return "just now";
+  const now = new Date();
   const diff = now.getTime() - d.getTime();
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -21,7 +23,8 @@ export function formatDate(date: string | Date): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export function formatCount(count: number): string {
+export function formatCount(count?: number | null): string {
+  if (count == null || isNaN(count)) return "0";
   if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
   if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
   return count.toString();

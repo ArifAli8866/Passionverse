@@ -95,6 +95,8 @@ export default function DiscoverPage() {
 
         const myProfile = await PassionAnalysisService.analyzeUser({
           userId: user.id,
+          fullName: user.fullName || "User",
+          username: user.username || "user",
           bio: user.bio,
           hobbies: user.hobbies,
           posts: [],

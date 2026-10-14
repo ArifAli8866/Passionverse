@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { cn, formatDate } from "@/lib/utils";
 import {
   Search, Send, ArrowLeft, MessageCircle, Image,
-  Mic, MicOff, X, File, Trash2, Forward, MoreVertical, Sparkles
+  Mic, MicOff, X, File as FileIcon, Trash2, Forward, MoreVertical, Sparkles
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { ChatAssistantService } from "@/services/ai/ChatAssistantService";
@@ -572,7 +572,7 @@ export default function MessagesPage() {
                           {msg.message_type === "file" && msg.file_url && (
                             <a href={msg.file_url} target="_blank" rel="noopener noreferrer"
                               className="flex items-center gap-2 mb-2 underline text-sm">
-                              <File className="w-4 h-4" /> {msg.file_name || "Download file"}
+                              <FileIcon className="w-4 h-4" /> {msg.file_name || "Download file"}
                             </a>
                           )}
                           {(msg.message_type === "text" || !msg.message_type) && (
@@ -610,7 +610,7 @@ export default function MessagesPage() {
                       </div>
                     ) : (
                       <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                        <File className="w-6 h-6 text-gray-500" />
+                        <FileIcon className="w-6 h-6 text-gray-500" />
                       </div>
                     )}
                     <p className="text-xs text-gray-600 dark:text-gray-400 flex-1 truncate">{selectedFile.name}</p>
@@ -655,7 +655,7 @@ export default function MessagesPage() {
                   </button>
                   <button onClick={() => fileInputRef.current?.click()}
                     className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-600">
-                    <File className="w-5 h-5" />
+                    <FileIcon className="w-5 h-5" />
                   </button>
                   <input ref={imageInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
                   <input ref={fileInputRef} type="file" onChange={handleFileSelect} className="hidden" />

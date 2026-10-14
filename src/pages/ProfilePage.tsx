@@ -96,32 +96,42 @@ export default function ProfilePage() {
           .eq("user_id", profile.id)
           .order("created_at", { ascending: false });
 
-        const formatted = (posts || []).map((post: any) => ({
-          id: post.id,
-          type: post.type,
-          content: post.content,
-          caption: post.caption,
-          imageUrl: post.image_url,
-          projectTitle: post.project_title,
-          projectDescription: post.project_description,
-          githubLink: post.github_link,
-          demoLink: post.demo_link,
-          createdAt: post.created_at,
-          likesCount: post.post_likes?.length || 0,
-          commentsCount: post.comments?.length || 0,
-          isLiked:
-            post.post_likes?.some(
-              (like: any) => like.user_id === currentUser?.id
-            ) || false,
-          user: {
-            id: post.profiles?.id,
-            fullName: post.profiles?.full_name,
-            username: post.profiles?.username,
-            avatar: post.profiles?.avatar_url || "",
-            hobbies: [],
-          },
-        }));
-        setUserPosts(formatted as Post[]);
+        const formatted = (posts || []).map((post: any) => {
+          const profileObj = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+          return {
+            id: post.id,
+            type: post.type || "text",
+            content: post.content || post.caption || "",
+            caption: post.caption || "",
+            imageUrl: post.image_url,
+            projectTitle: post.project_title,
+            projectDescription: post.project_description,
+            githubLink: post.github_link,
+            demoLink: post.demo_link,
+            createdAt: post.created_at,
+            likesCount: post.post_likes?.length || 0,
+            commentsCount: post.comments?.length || 0,
+            isLiked:
+              post.post_likes?.some(
+                (like: any) => like.user_id === currentUser?.id
+              ) || false,
+            userId: post.user_id,
+            user: {
+              id: profileObj?.id || post.user_id,
+              fullName: profileObj?.full_name || "Creator",
+              username: profileObj?.username || "creator",
+              avatar: profileObj?.avatar_url || "",
+              bio: profileObj?.bio || "",
+              location: profileObj?.location || "",
+              website: profileObj?.website || "",
+              hobbies: Array.isArray(profileObj?.hobbies) ? profileObj.hobbies : [],
+              followers: 0,
+              following: 0,
+              posts: 0,
+            },
+          };
+        });
+        setUserPosts(formatted as unknown as Post[]);
       } catch (error: any) {
         toast.error("Failed to load profile");
       } finally {

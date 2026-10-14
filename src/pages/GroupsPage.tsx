@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/store/auth";
 import { Users, Plus, Lock, Globe, Search, X, Check } from "lucide-react";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 export default function GroupsPage() {
   const { user } = useAuth();

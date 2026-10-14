@@ -78,17 +78,29 @@ export default function RegisterPage() {
       if (error) throw error;
 
       if (data.user) {
-        await supabase
-          .from("profiles")
-          .update({
-            full_name: formData.fullName,
-            username: formData.username,
-            hobbies: selectedHobbies,
-          })
-          .eq("id", data.user.id);
+        try {
+          await supabase
+            .from("profiles")
+            .upsert({
+              id: data.user.id,
+              full_name: formData.fullName,
+              username: formData.username,
+              hobbies: selectedHobbies,
+            }, { onConflict: "id" });
+        } catch (e) {
+          console.warn("Could not upsert profile:", e);
+        }
 
-        toast.success("Account created! Please check your email to verify.");
-        navigate("/login");
+        toast.success(
+          data.session
+            ? "Welcome to Passionverse!"
+            : "Account created! Please check your email to verify."
+        );
+        if (data.session) {
+          navigate("/feed");
+        } else {
+          navigate("/login");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Registration failed");

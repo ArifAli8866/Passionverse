@@ -44,15 +44,16 @@ export function Avatar({
     away: "bg-amber-500 ring-2 ring-white dark:ring-slate-900",
   };
 
-  const initials = name
-    ? name
-        .trim()
-        .split(/\s+/)
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "?";
+  const initials =
+    typeof name === "string" && name.trim().length > 0
+      ? name
+          .trim()
+          .split(/\s+/)
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : "?";
 
   const colors = [
     "bg-gradient-to-br from-indigo-500 to-purple-600",
@@ -63,7 +64,10 @@ export function Avatar({
     "bg-gradient-to-br from-rose-500 to-red-600",
   ];
 
-  const colorIndex = name ? Math.abs(name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)) % colors.length : 0;
+  const colorIndex =
+    typeof name === "string" && name.length > 0
+      ? Math.abs(name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)) % colors.length
+      : 0;
 
   const content = src ? (
     <img
@@ -106,18 +110,21 @@ export function Avatar({
 
 export function AvatarGroup({
   children,
-  limit = 4,
+  limit,
+  max,
   size = "sm",
   className,
 }: {
   children: React.ReactNode;
   limit?: number;
+  max?: number;
   size?: "xs" | "sm" | "md";
   className?: string;
 }) {
+  const cap = limit ?? max ?? 4;
   const childrenArray = React.Children.toArray(children);
-  const visibleAvatars = childrenArray.slice(0, limit);
-  const remaining = childrenArray.length - limit;
+  const visibleAvatars = childrenArray.slice(0, cap);
+  const remaining = childrenArray.length - cap;
 
   const sizeStyles = {
     xs: "w-6 h-6 text-[10px]",

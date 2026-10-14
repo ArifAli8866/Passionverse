@@ -1,4 +1,4 @@
-import type {
+export type {
   ScoredPassion,
   AIPassionProfile,
   PassionGuardVerdict,
@@ -87,6 +87,7 @@ export interface GitHubRepoAnalysis {
 
 export interface ChatSuggestionInput {
   lastMessage: string;
+  partnerName?: string;
   conversationContext?: string[];
   recipientPassions?: string[];
 }

@@ -8,9 +8,10 @@ import { StoriesBar } from "@/components/feed/StoriesBar";
 import { Skeleton } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import type { Post, FeedType } from "@/types";
-import { Flame, RefreshCw, Sparkles } from "lucide-react";
+import { Flame, RefreshCw } from "lucide-react";
 import toast from "react-hot-toast";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
+import { cn } from "@/lib/utils";
 
 export default function FeedPage() {
   const { user } = useAuth();
@@ -54,34 +55,43 @@ export default function FeedPage() {
       const { data, error } = await query;
       if (error) throw error;
 
-      const formatted = (data || []).map((post: any) => ({
-        id: post.id,
-        userId: post.user_id,
-        type: post.type || "text",
-        content: post.content || "",
-        caption: post.caption || "",
-        imageUrl: post.image_url,
-        projectTitle: post.project_title,
-        projectDescription: post.project_description,
-        githubLink: post.github_link,
-        demoLink: post.demo_link,
-        techStack: post.tech_stack,
-        createdAt: post.created_at,
-        likesCount: post.post_likes?.length || 0,
-        commentsCount: post.comments?.length || 0,
-        isLiked: post.post_likes?.some(
-          (like: any) => like.user_id === user?.id
-        ) || false,
-        user: {
-          id: post.profiles?.id || post.user_id,
-          fullName: post.profiles?.full_name || "Creator",
-          username: post.profiles?.username || "creator",
-          avatar: post.profiles?.avatar_url || "",
-          hobbies: [],
-        },
-      }));
+      const formatted = (data || []).map((post: any) => {
+        const profileObj = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+        return {
+          id: post.id,
+          userId: post.user_id,
+          type: post.type || "text",
+          content: post.content || post.caption || "",
+          caption: post.caption || "",
+          imageUrl: post.image_url,
+          projectTitle: post.project_title,
+          projectDescription: post.project_description,
+          githubLink: post.github_link,
+          demoLink: post.demo_link,
+          techStack: post.tech_stack,
+          createdAt: post.created_at,
+          likesCount: Array.isArray(post.post_likes) ? post.post_likes.length : 0,
+          commentsCount: Array.isArray(post.comments) ? post.comments.length : 0,
+          isLiked: Array.isArray(post.post_likes)
+            ? post.post_likes.some((like: any) => like.user_id === user?.id)
+            : false,
+          user: {
+            id: profileObj?.id || post.user_id,
+            fullName: profileObj?.full_name || "Creator",
+            username: profileObj?.username || "creator",
+            avatar: profileObj?.avatar_url || "",
+            bio: profileObj?.bio || "",
+            location: profileObj?.location || "",
+            website: profileObj?.website || "",
+            hobbies: Array.isArray(profileObj?.hobbies) ? profileObj.hobbies : [],
+            followers: 0,
+            following: 0,
+            posts: 0,
+          },
+        };
+      });
 
-      setPosts(formatted as Post[]);
+      setPosts(formatted as unknown as Post[]);
     } catch (error: any) {
       toast.error("Failed to load posts");
     } finally {

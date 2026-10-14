@@ -55,17 +55,24 @@ export default function SavedPostsPage() {
             commentsCount: post.comments?.length || 0,
             isLiked: post.post_likes?.some((like: any) => like.user_id === user.id) || false,
             isSaved: true,
+            userId: post.user_id,
             user: {
-              id: post.profiles?.id,
-              fullName: post.profiles?.full_name,
-              username: post.profiles?.username,
+              id: post.profiles?.id || post.user_id,
+              fullName: post.profiles?.full_name || "Creator",
+              username: post.profiles?.username || "creator",
               avatar: post.profiles?.avatar_url || "",
-              hobbies: [],
+              bio: post.profiles?.bio || "",
+              location: post.profiles?.location || "",
+              website: post.profiles?.website || "",
+              hobbies: Array.isArray(post.profiles?.hobbies) ? post.profiles.hobbies : [],
+              followers: 0,
+              following: 0,
+              posts: 0,
             },
           };
         });
 
-      setSavedPosts(formatted as Post[]);
+      setSavedPosts(formatted as unknown as Post[]);
     } catch (error: any) {
       toast.error("Failed to load saved posts");
     } finally {
