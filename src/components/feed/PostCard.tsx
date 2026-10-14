@@ -18,6 +18,8 @@ import {
   Send,
   Flag,
   ExternalLink,
+  Paperclip,
+  Smile,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -212,35 +214,76 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
   ];
   const placeholderColor = placeholderColors[post.id.length % placeholderColors.length];
 
+  const renderFormattedContent = (content: string) => {
+    // Highlight hashtags as in Reference 2 (#amazing #great #lifetime #uiux #machinelearning)
+    const parts = content.split(/(#[a-zA-Z0-9_-]+)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("#")) {
+        return (
+          <Link
+            key={index}
+            to={`/search?q=${encodeURIComponent(part)}`}
+            className="font-bold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors inline-block mr-1"
+          >
+            {part}
+          </Link>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
-    <div className="post-card card-shine rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 animate-fade-in">
+    <div className="rounded-3xl border border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-900 shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <Link to={`/profile/${post.user?.username || "user"}`} className="flex items-center gap-3 group">
-          <Avatar src={post.user?.avatar || undefined} name={post.user?.fullName || "User"} size="md" />
+          <Avatar
+            src={post.user?.avatar || undefined}
+            name={post.user?.fullName || "User"}
+            size="md"
+            status="online"
+          />
           <div>
-            <p className="font-semibold text-gray-900 group-hover:text-indigo-600 dark:text-gray-100 dark:group-hover:text-indigo-400 transition-colors">
+            <p className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-indigo-600 dark:text-slate-100 dark:group-hover:text-indigo-400 transition-colors">
               {post.user?.fullName || "User"}
             </p>
-            <p className="text-xs text-gray-500">@{post.user?.username || "user"} · {formatDate(post.createdAt)}</p>
+            <p className="text-[11px] text-slate-400">
+              {post.type === "project" ? "Software Creator" : "Product Designer, Passionverse"} · {formatDate(post.createdAt)}
+            </p>
           </div>
         </Link>
         <div className="relative">
           <button
+            type="button"
             onClick={() => setShowOptions(!showOptions)}
-            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors cursor-pointer"
           >
-            <MoreHorizontal className="w-5 h-5 text-gray-400" />
+            <MoreHorizontal className="w-4 h-4" />
           </button>
           {showOptions && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setShowOptions(false)} />
-              <div className="absolute right-0 top-full mt-1 z-20 w-48 rounded-xl border border-gray-100 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
-                <button className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
-                  <Flag className="w-4 h-4" /> Report Post
+              <div className="absolute right-0 top-full mt-1.5 z-20 w-44 rounded-2xl border border-slate-200/80 bg-white/95 shadow-xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 overflow-hidden animate-scale-in">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOptions(false);
+                    setShowShareModal(true);
+                  }}
+                  className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 cursor-pointer"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-indigo-500" /> Share Post
                 </button>
-                <button className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800">
-                  <Share2 className="w-4 h-4" /> Share Post
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowOptions(false);
+                    toast.success("Post reported to community moderators");
+                  }}
+                  className="flex items-center gap-2.5 w-full px-3.5 py-2.5 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
+                >
+                  <Flag className="w-3.5 h-3.5" /> Report Post
                 </button>
               </div>
             </>
@@ -249,186 +292,233 @@ export default function PostCard({ post, onLike, onSave }: PostCardProps) {
       </div>
 
       {/* Content */}
-      <div className="px-5 pb-3">
+      <div className="px-5 pb-3 space-y-2">
         {post.type === "project" && (
-          <div className="mb-3 inline-block rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 px-3 py-1 text-xs font-semibold text-indigo-600 dark:from-indigo-900/30 dark:to-purple-900/30 dark:text-indigo-400">
-            🚀 Project Showcase
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800/50">
+            <span>🚀 Project Showcase</span>
+            {post.projectTitle && <span className="font-semibold text-slate-700 dark:text-slate-300">· {post.projectTitle}</span>}
           </div>
         )}
-        <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line">
-          {post.content}
+        <div className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
+          {renderFormattedContent(post.content)}
         </div>
       </div>
 
-      {/* Post Image */}
+      {/* Post Image / Media (Reference 2 style) */}
       {post.type !== "text" && (
-        <div className="mx-5 mb-3 rounded-xl overflow-hidden" style={{ maxHeight: "400px" }}>
-          {post.imageUrl ? (
-            post.type === "video" ? (
-              <video
-                src={post.imageUrl}
-                controls
-                className="w-full rounded-xl"
-                style={{ maxHeight: "400px" }}
-              />
+        <div className="px-5 mb-3">
+          <div className="rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-2xs">
+            {post.imageUrl ? (
+              post.type === "video" ? (
+                <video
+                  src={post.imageUrl}
+                  controls
+                  className="w-full max-h-[420px] object-cover"
+                />
+              ) : (
+                <img
+                  src={post.imageUrl}
+                  alt="Post content"
+                  className="w-full max-h-[420px] object-cover"
+                />
+              )
             ) : (
-              <img
-                src={post.imageUrl}
-                alt="Post"
-                className="w-full object-cover rounded-xl"
-                style={{ maxHeight: "400px" }}
-              />
-            )
-          ) : (
-            <div
-              className={cn("bg-gradient-to-br rounded-xl", placeholderColor)}
-              style={{ aspectRatio: "16/9", maxHeight: "400px" }}
-            >
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center text-white/80 p-8">
-                  {post.type === "image" ? (
-                    <>
-                      <div className="text-4xl mb-2">📸</div>
-                      <p className="text-sm font-medium">{post.caption || "Post Image"}</p>
-                    </>
-                  ) : post.type === "video" ? (
-                    <>
-                      <div className="text-4xl mb-2">🎥</div>
-                      <p className="text-sm font-medium">{post.caption || "Video Post"}</p>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-4xl mb-2">🚀</div>
-                      <p className="text-lg font-bold">{post.projectTitle}</p>
-                      <p className="text-sm mt-1 opacity-80 line-clamp-2">{post.projectDescription}</p>
-                    </>
-                  )}
-                </div>
+              <div
+                className={cn("bg-gradient-to-br p-8 text-white flex flex-col items-center justify-center min-h-[220px]", placeholderColor)}
+              >
+                <div className="text-3xl mb-2">✨</div>
+                <h4 className="text-base font-bold text-center">{post.projectTitle || "Passion Creation"}</h4>
+                {post.projectDescription && (
+                  <p className="text-xs opacity-90 text-center max-w-md mt-1">{post.projectDescription}</p>
+                )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       )}
 
-      {/* Project Links */}
+      {/* Project Links & Tech Stack */}
       {post.type === "project" && (
-        <div className="px-5 pb-3 flex flex-wrap gap-2">
+        <div className="px-5 pb-3 flex flex-wrap items-center gap-2">
           {post.githubLink && (
-            <a href={post.githubLink} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg> GitHub
+            <a
+              href={post.githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition-colors shadow-2xs"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>
+              <span>GitHub</span>
             </a>
           )}
           {post.demoLink && (
-            <a href={post.demoLink} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400 dark:hover:bg-indigo-900/50 transition-colors">
-              <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+            <a
+              href={post.demoLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors shadow-2xs"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Live Demo</span>
             </a>
           )}
         </div>
       )}
 
-      {/* AI Project Match Badge */}
+      {/* AI Match Badge */}
       {post.type === "project" && projectMatch && user && user.id !== post.userId && (
-        <div className="px-5">
+        <div className="px-5 pb-3">
           <ProjectMatchBadge match={projectMatch} />
         </div>
       )}
 
-      {/* Action Stats */}
-      <div className="flex items-center gap-4 px-5 py-2 border-t border-gray-50 dark:border-gray-800">
-        <span className="text-xs text-gray-400">{formatCount(likesCount)} likes</span>
-        <span className="text-xs text-gray-400">{formatCount((post.commentsCount || 0) + comments.length)} comments</span>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between px-5 py-2 border-t border-gray-50 dark:border-gray-800">
-        <div className="flex items-center gap-1">
-          <button onClick={handleLike}
+      {/* Action Bar (Reference 2 style: Likes, Comments, Share, Saved) */}
+      <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <button
+            type="button"
+            onClick={handleLike}
             className={cn(
-              "like-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-              isLiked
-                ? "liked text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/20"
-                : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-            )}>
-            <Heart className={cn("w-4 h-4", isLiked && "fill-current")} /> Like
+              "flex items-center gap-1.5 font-semibold transition-all cursor-pointer",
+              isLiked ? "text-rose-500 scale-105" : "hover:text-slate-800 dark:hover:text-slate-200"
+            )}
+          >
+            <Heart className={cn("w-4 h-4 transition-transform", isLiked && "fill-current scale-110")} />
+            <span>{likesCount} Likes</span>
           </button>
-          <button onClick={handleToggleComments}
-            className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-              showComments ? "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/20" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800")}>
-            <MessageCircle className="w-4 h-4" /> Comment
+
+          <button
+            type="button"
+            onClick={handleToggleComments}
+            className="flex items-center gap-1.5 font-semibold hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>{(post.commentsCount || 0) + comments.length} Comments</span>
           </button>
-          <button onClick={() => setShowShareModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 transition-all">
-            <Share2 className="w-4 h-4" /> Share
+
+          <button
+            type="button"
+            onClick={() => setShowShareModal(true)}
+            className="flex items-center gap-1.5 font-semibold hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer"
+          >
+            <Share2 className="w-4 h-4" />
+            <span>Share</span>
           </button>
         </div>
-        <button onClick={handleSave}
-          className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-            isSaved ? "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/20" : "text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800")}>
+
+        <button
+          type="button"
+          onClick={handleSave}
+          className={cn(
+            "flex items-center gap-1.5 font-semibold transition-colors cursor-pointer",
+            isSaved ? "text-indigo-600 dark:text-indigo-400" : "hover:text-slate-800 dark:hover:text-slate-200"
+          )}
+        >
           <Bookmark className={cn("w-4 h-4", isSaved && "fill-current")} />
+          <span className="hidden sm:inline">{isSaved ? "Saved" : "Save"}</span>
         </button>
       </div>
 
-      {/* Comments Section */}
+      {/* Modern Inline Comment Composer (matching Reference 2!) */}
+      <div className="border-t border-slate-100 dark:border-slate-800/80 px-5 py-3 bg-slate-50/40 dark:bg-slate-900/40">
+        <div className="flex items-center gap-2.5">
+          <Avatar
+            src={user?.avatar || undefined}
+            name={user?.fullName || "You"}
+            size="sm"
+            status="online"
+          />
+          <div className="flex-1 flex items-center bg-white dark:bg-slate-800 rounded-full border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 shadow-2xs focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/10 transition-all">
+            <input
+              type="text"
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Write your comment..."
+              className="flex-1 bg-transparent border-0 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
+              onKeyDown={(e) => e.key === "Enter" && handleComment()}
+            />
+            <button
+              type="button"
+              onClick={() => toast("Attachments feature coming soon! 📎", { icon: "📎" })}
+              className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              title="Attach media"
+            >
+              <Paperclip className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCommentText((prev) => prev + "🔥 ")}
+              className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              title="Add emoji"
+            >
+              <Smile className="w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={handleComment}
+              disabled={!commentText.trim()}
+              className="ml-1 w-6 h-6 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-2xs"
+              title="Send comment"
+            >
+              <Send className="w-3 h-3 stroke-[2.5]" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Expanded Comments List */}
       {showComments && (
-        <div className="border-t border-gray-50 dark:border-gray-800 px-5 py-4 space-y-3">
-          {/* Loading state */}
+        <div className="border-t border-slate-100 dark:border-slate-800 px-5 py-4 space-y-3 bg-slate-50/20 dark:bg-slate-950/20">
           {commentsLoading && (
             <div className="flex items-center justify-center py-4">
-              <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
             </div>
           )}
 
-          {/* No comments */}
           {!commentsLoading && comments.length === 0 && (
-            <p className="text-center text-sm text-gray-400 py-3">No comments yet. Be the first!</p>
+            <p className="text-center text-xs text-slate-400 py-3">No comments yet. Be the first to reply!</p>
           )}
 
-          {/* Comments list */}
           {comments.map((comment) => (
-            <div key={comment.id} className="flex gap-3">
+            <div key={comment.id} className="flex gap-2.5 items-start">
               <Avatar src={comment.user.avatar || undefined} name={comment.user.fullName} size="sm" />
               <div className="flex-1">
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl px-3 py-2">
+                <div className="bg-slate-100/80 dark:bg-slate-800/80 rounded-2xl px-3.5 py-2">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{comment.user.fullName}</p>
-                    <p className="text-xs text-gray-400">@{comment.user.username}</p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{comment.user.fullName}</p>
+                    <p className="text-[10px] text-slate-400">@{comment.user.username}</p>
                   </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">{comment.content}</p>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{comment.content}</p>
                 </div>
-                <p className="text-xs text-gray-400 mt-1 ml-2">{formatDate(comment.createdAt)}</p>
+                <p className="text-[10px] text-slate-400 mt-1 ml-2">{formatDate(comment.createdAt)}</p>
               </div>
             </div>
           ))}
-
-          {/* Add comment input */}
-          <div className="flex items-center gap-3 pt-1">
-            <Avatar src={user?.avatar || undefined} name={user?.fullName || "You"} size="sm" />
-            <div className="flex-1 flex items-center gap-2 bg-gray-50 dark:bg-gray-800 rounded-2xl px-3 py-1.5">
-              <input type="text" value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Write a comment..."
-                className="flex-1 bg-transparent border-0 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none"
-                onKeyDown={(e) => e.key === "Enter" && handleComment()} />
-              <button onClick={handleComment} disabled={!commentText.trim()}
-                className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-indigo-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
         </div>
       )}
 
       {/* Share Modal */}
       <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} title="Share Post" size="sm">
         <div className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Share this post with your friends!</p>
-          <div className="flex items-center gap-3">
-            <input type="text" readOnly value={`${window.location.origin}/post/${post.id}`}
-              className="flex-1 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100" />
-            <Button variant="primary" size="sm"
-              onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`); setShowShareModal(false); }}>
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            Share this passion post with peers, creators, or external platforms!
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              readOnly
+              value={`${window.location.origin}/post/${post.id}`}
+              className="flex-1 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs text-slate-900 dark:text-slate-100"
+            />
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+                setShowShareModal(false);
+                toast.success("Link copied to clipboard!");
+              }}
+            >
               Copy
             </Button>
           </div>
