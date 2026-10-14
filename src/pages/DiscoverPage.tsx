@@ -242,16 +242,16 @@ export default function DiscoverPage() {
         </div>
 
         {/* AI Innovation Studio Banner */}
-        <div className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 p-6 text-white shadow-xl shadow-indigo-500/10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-xs">
-                <Sparkles className="w-3.5 h-3.5" />
+        <div className="relative overflow-hidden rounded-3xl border border-indigo-200/50 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 p-6 sm:p-8 text-white shadow-lg shadow-indigo-500/15">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+            <div className="space-y-2 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 Passionverse AI Engine
               </div>
-              <h2 className="text-xl font-bold">Turn Any Hobby Into Your Next Big Project</h2>
-              <p className="text-xs text-white/80 leading-relaxed">
-                Our free local AI analyzes your skills, generates step-by-step roadmaps, and
+              <h2 className="text-xl sm:text-2xl font-black tracking-tight">Turn Any Passion Into Your Next Big Project</h2>
+              <p className="text-xs sm:text-sm text-indigo-100/90 leading-relaxed font-normal">
+                Our local intelligence analyzes your skills, generates step-by-step milestones, and
                 intelligently matches you with makers who complement your strengths.
               </p>
             </div>
@@ -259,9 +259,9 @@ export default function DiscoverPage() {
               <button
                 type="button"
                 onClick={() => setShowProjectGenerator(true)}
-                className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-indigo-700 shadow-md hover:bg-gray-50 transition-all"
+                className="rounded-2xl bg-white px-4 py-2.5 text-xs font-bold text-indigo-700 shadow-sm hover:bg-indigo-50 hover:shadow-md transition-all cursor-pointer"
               >
-                Spark Project Idea
+                Spark Project Idea ✨
               </button>
               <button
                 type="button"
@@ -269,25 +269,26 @@ export default function DiscoverPage() {
                   setRoadmapTopic("Full Stack AI Development");
                   setShowRoadmapModal(true);
                 }}
-                className="rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-xs font-semibold text-white backdrop-blur-xs hover:bg-white/20 transition-all"
+                className="rounded-2xl border border-white/30 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white backdrop-blur-md hover:bg-white/20 transition-all cursor-pointer"
               >
                 Create Learning Roadmap
               </button>
             </div>
           </div>
+          <div className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-purple-500/20 blur-2xl pointer-events-none" />
         </div>
 
         {/* Category Pills */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
           {["All", ...categories].map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                "px-4 py-1.5 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer select-none",
                 selectedCategory === cat
-                  ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                  ? "bg-indigo-600 text-white shadow-sm shadow-indigo-500/25"
+                  : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
               )}
             >
               {cat}
