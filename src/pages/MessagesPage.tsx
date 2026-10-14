@@ -394,48 +394,64 @@ export default function MessagesPage() {
   const displayList = searchQuery ? searchResults : conversations;
 
   return (
-    <AppLayout showSidebar={false}>
-      <div className="flex h-[calc(100vh-8rem)] rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden dark:border-gray-800 dark:bg-gray-900">
+    <AppLayout showSidebar={false} fullWidth={true}>
+      <div className="flex h-[calc(100vh-7.5rem)] rounded-3xl border border-slate-200/80 bg-white shadow-md overflow-hidden dark:border-slate-800 dark:bg-slate-900">
 
         {/* Sidebar */}
-        <div className={cn("w-full sm:w-80 lg:w-96 border-r border-gray-100 dark:border-gray-800 flex flex-col",
+        <div className={cn("w-full sm:w-80 lg:w-96 border-r border-slate-200/80 dark:border-slate-800 flex flex-col bg-slate-50/40 dark:bg-slate-900/40",
           showMobileChat && "hidden sm:flex")}>
-          <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Messages</h2>
+          <div className="p-4 border-b border-slate-200/80 dark:border-slate-800">
+            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">Direct Messages</h2>
             <div className="relative mt-3">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input type="text" value={searchQuery} onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search people..."
-                className="w-full rounded-xl bg-gray-50 dark:bg-gray-800 py-2 pl-10 pr-4 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 border-0" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search conversations..."
+                className="w-full rounded-2xl bg-white dark:bg-slate-800/80 py-2 pl-10 pr-4 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 border border-slate-200 dark:border-slate-700/80"
+              />
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/50">
             {displayList.length === 0 && searchQuery && (
-              <p className="text-center text-sm text-gray-400 mt-8">No users found</p>
+              <p className="text-center text-xs text-slate-400 mt-8">No users found</p>
             )}
             {displayList.length === 0 && !searchQuery && (
-              <div className="text-center mt-8 px-4">
-                <MessageCircle className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">No conversations yet</p>
-                <p className="text-xs text-gray-400 mt-1">Search for people to start chatting</p>
+              <div className="text-center mt-12 px-4 space-y-2">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto shadow-2xs">
+                  <MessageCircle className="w-6 h-6" />
+                </div>
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">No conversations yet</p>
+                <p className="text-[11px] text-slate-400">Search for makers and peers to start collaborating!</p>
               </div>
             )}
             {displayList.map((chatUser) => (
-              <button key={chatUser.id} onClick={() => handleSelectUser(chatUser)}
-                className={cn("w-full flex items-center gap-3 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800",
-                  activeUser?.id === chatUser.id && "bg-indigo-50 dark:bg-indigo-900/20")}>
-                <div className="relative">
-                  <Avatar name={chatUser.full_name} size="md" />
-                  {chatUser.is_online && (
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-gray-900 rounded-full" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0 text-left">
-                  <p className="font-semibold text-sm text-gray-900 dark:text-gray-100 truncate">{chatUser.full_name}</p>
-                  <p className="text-xs truncate">
-                    {chatUser.is_online
-                      ? <span className="text-emerald-500">Online</span>
-                      : <span className="text-gray-500">@{chatUser.username}</span>}
+              <button
+                key={chatUser.id}
+                onClick={() => handleSelectUser(chatUser)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3.5 transition-all text-left cursor-pointer",
+                  activeUser?.id === chatUser.id
+                    ? "bg-indigo-50/80 dark:bg-indigo-950/40 border-l-4 border-indigo-600"
+                    : "hover:bg-slate-100/70 dark:hover:bg-slate-800/50"
+                )}
+              >
+                <Avatar
+                  src={chatUser.avatar_url}
+                  name={chatUser.full_name}
+                  size="md"
+                  status={chatUser.is_online ? "online" : undefined}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold text-xs text-slate-900 dark:text-slate-100 truncate">{chatUser.full_name}</p>
+                    {chatUser.is_online && (
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-400 truncate mt-0.5">
+                    @{chatUser.username}
                   </p>
                 </div>
               </button>
