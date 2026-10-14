@@ -157,33 +157,55 @@ export default function GroupsPage() {
   );
 
   return (
-    <AppLayout>
-      <div className="max-w-4xl mx-auto">
+    <AppLayout showRightSidebar={true}>
+      <div className="space-y-5">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Groups</h1>
-            <p className="text-sm text-gray-500 mt-1">Connect with people sharing your passion</p>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight flex items-center gap-2">
+              <span>Community Groups</span>
+              <span className="text-xl">👥</span>
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Connect, share resources, and brainstorm with passion circles and squads.
+            </p>
           </div>
-          <button onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2.5 rounded-xl font-medium text-sm shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition-all hover:scale-105">
-            <Plus className="w-4 h-4" /> Create Group
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 text-white px-4 py-2 rounded-2xl font-bold text-xs shadow-sm shadow-indigo-500/25 hover:shadow-md hover:shadow-indigo-500/30 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer shrink-0"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Create Group</span>
           </button>
         </div>
 
         {/* Search */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search groups..."
-            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" />
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search groups by name or passion description..."
+            className="w-full rounded-2xl border border-slate-200/90 bg-white py-2.5 pl-10 pr-4 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 shadow-2xs"
+          />
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl mb-6">
-          {[["discover", "Discover"], ["my", "My Groups"]].map(([tab, label]) => (
-            <button key={tab} onClick={() => setActiveTab(tab as any)}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${activeTab === tab ? "bg-white dark:bg-gray-900 text-indigo-600 shadow-sm" : "text-gray-500"}`}>
+        <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/60 rounded-2xl">
+          {[["discover", "Discover Groups"], ["my", "My Groups"]].map(([tab, label]) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab as any)}
+              className={cn(
+                "flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer select-none",
+                activeTab === tab
+                  ? "bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs"
+                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+              )}
+            >
               {label} {tab === "my" && `(${myGroups.length})`}
             </button>
           ))}
@@ -193,19 +215,19 @@ export default function GroupsPage() {
         {isLoading ? (
           <div className="grid sm:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-48 rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />
+              <div key={i} className="h-56 rounded-3xl bg-slate-100 dark:bg-slate-800/60 animate-pulse" />
             ))}
           </div>
         ) : filteredGroups.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 mb-4">
-              <Users className="h-8 w-8 text-gray-400" />
+          <div className="text-center py-16 rounded-3xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 p-8 shadow-xs">
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-3 shadow-2xs">
+              <Users className="h-7 w-7" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">
               {activeTab === "my" ? "You haven't joined any groups yet" : "No groups found"}
             </h3>
-            <p className="text-sm text-gray-500">
-              {activeTab === "my" ? "Discover and join groups that match your interests" : "Be the first to create a group!"}
+            <p className="text-xs text-slate-400">
+              {activeTab === "my" ? "Discover and join squads matching your passions" : "Be the first creator to launch a group!"}
             </p>
           </div>
         ) : (
@@ -214,59 +236,69 @@ export default function GroupsPage() {
               const isMember = group.group_members?.some((m: any) => m.user_id === user?.id);
               const memberCount = group.group_members?.length || 0;
               return (
-                <div key={group.id} className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1">
+                <div
+                  key={group.id}
+                  className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 group"
+                >
                   {/* Cover gradient */}
-                  <div className="h-20 bg-gradient-to-r from-indigo-500 to-purple-600 relative">
-                    <div className="absolute inset-0 bg-black/10" />
-                    <div className="absolute -bottom-6 left-4">
+                  <div className="h-24 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-800 relative p-3">
+                    <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
+                    <div className="absolute -bottom-6 left-4 z-10">
                       {group.avatar_url ? (
-                        <img src={group.avatar_url} alt={group.name} className="w-12 h-12 rounded-xl border-2 border-white object-cover" />
+                        <img
+                          src={group.avatar_url}
+                          alt={group.name}
+                          className="w-13 h-13 rounded-2xl border-2 border-white dark:border-slate-900 object-cover shadow-xs"
+                        />
                       ) : (
-                        <div className="w-12 h-12 rounded-xl border-2 border-white bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                        <div className="w-13 h-13 rounded-2xl border-2 border-white dark:border-slate-900 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-xs">
                           {group.name[0]}
                         </div>
                       )}
                     </div>
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-3 right-3 z-10">
                       {group.privacy === "private" ? (
-                        <span className="flex items-center gap-1 bg-black/30 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        <span className="flex items-center gap-1 bg-black/40 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-md">
                           <Lock className="w-3 h-3" /> Private
                         </span>
                       ) : (
-                        <span className="flex items-center gap-1 bg-black/30 text-white text-xs px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        <span className="flex items-center gap-1 bg-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-md">
                           <Globe className="w-3 h-3" /> Public
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-4 pt-8">
+                  <div className="p-4 pt-9 space-y-2">
                     <Link to={isMember ? `/groups/${group.id}` : "#"}>
-                      <h3 className="font-bold text-gray-900 dark:text-gray-100 hover:text-indigo-600 transition-colors">{group.name}</h3>
+                      <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 transition-colors">
+                        {group.name}
+                      </h3>
                     </Link>
                     {group.description && (
-                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{group.description}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                        {group.description}
+                      </p>
                     )}
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center gap-2">
-                        <div className="flex -space-x-1">
-                          {group.group_members?.slice(0, 3).map((m: any, i: number) => (
-                            <div key={i} className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 border border-white flex items-center justify-center text-white text-xs font-bold">
-                              {i + 1}
-                            </div>
-                          ))}
-                        </div>
-                        <span className="text-xs text-gray-500">{memberCount} members</span>
+                    <div className="flex items-center justify-between pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-semibold">
+                        <Users className="w-3.5 h-3.5 text-indigo-500" />
+                        <span>{memberCount} members</span>
                       </div>
                       {isMember ? (
-                        <Link to={`/groups/${group.id}`}
-                          className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg font-medium hover:bg-indigo-100 transition-colors">
-                          Open
+                        <Link
+                          to={`/groups/${group.id}`}
+                          className="text-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 px-3.5 py-1.5 rounded-xl font-bold hover:bg-indigo-100 transition-colors shadow-2xs"
+                        >
+                          Open Squad →
                         </Link>
                       ) : (
-                        <button onClick={() => handleJoin(group)}
-                          className="text-xs bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1.5 rounded-lg font-medium hover:opacity-90 transition-opacity">
-                          {group.privacy === "private" ? "Request" : "Join"}
+                        <button
+                          type="button"
+                          onClick={() => handleJoin(group)}
+                          className="text-xs bg-indigo-600 text-white hover:bg-indigo-500 px-3.5 py-1.5 rounded-xl font-bold shadow-xs transition-all cursor-pointer"
+                        >
+                          {group.privacy === "private" ? "Request Join" : "Join Squad"}
                         </button>
                       )}
                     </div>
