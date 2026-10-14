@@ -4,10 +4,11 @@ import AppLayout from "@/components/layout/AppLayout";
 import CreatePostCard from "@/components/feed/CreatePostCard";
 import PostCard from "@/components/feed/PostCard";
 import FeedTabs from "@/components/feed/FeedTabs";
+import { StoriesBar } from "@/components/feed/StoriesBar";
 import { Skeleton } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
 import type { Post, FeedType } from "@/types";
-import { Flame, RefreshCw } from "lucide-react";
+import { Flame, RefreshCw, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
@@ -93,59 +94,74 @@ export default function FeedPage() {
   }, [activeTab]);
 
   return (
-    <AppLayout>
-      <div className="max-w-2xl mx-auto space-y-4">
-        <div className="flex items-center justify-between">
+    <AppLayout showRightSidebar={true}>
+      <div className="space-y-4">
+        {/* Stories / Creators Carousel (Reference 2) */}
+        <StoriesBar />
+
+        {/* Feed Header */}
+        <div className="flex items-center justify-between px-1">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
               {activeTab === "global" && "Global Feed"}
-              {activeTab === "following" && "Following"}
-              {activeTab === "hobby" && "Your Hobby Feed"}
+              {activeTab === "following" && "Following Feed"}
+              {activeTab === "hobby" && "Hobby & Passion Feed"}
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {activeTab === "global" && "Discover what everyone is sharing"}
-              {activeTab === "following" && "Posts from people you follow"}
-              {activeTab === "hobby" && "Posts tailored to your interests"}
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {activeTab === "global" && "Explore live creations and questions from community members"}
+              {activeTab === "following" && "Updates from the creators you follow"}
+              {activeTab === "hobby" && "Handpicked discussions and projects based on your hobbies"}
             </p>
           </div>
           <button
+            type="button"
             onClick={fetchPosts}
-            className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Refresh Feed"
           >
-            <RefreshCw className="w-5 h-5" />
+            <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
           </button>
         </div>
 
+        {/* Modern Tabs */}
         <FeedTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {/* Quick Create Card */}
         <CreatePostCard />
 
+        {/* Feed Items */}
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-2xl border border-gray-100 bg-white p-5 dark:border-gray-800 dark:bg-gray-900">
-                <div className="flex items-center gap-3 mb-4">
+              <div
+                key={i}
+                className="rounded-3xl border border-slate-200/80 bg-white p-5 dark:border-slate-800/80 dark:bg-slate-900 shadow-xs space-y-3"
+              >
+                <div className="flex items-center gap-3">
                   <Skeleton className="w-10 h-10 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="w-32 h-4" />
-                    <Skeleton className="w-20 h-3" />
+                  <div className="space-y-1.5 flex-1">
+                    <Skeleton className="w-32 h-3.5 rounded-md" />
+                    <Skeleton className="w-20 h-2.5 rounded-md" />
                   </div>
                 </div>
-                <Skeleton className="w-full h-4 mb-2" />
-                <Skeleton className="w-3/4 h-4" />
+                <Skeleton className="w-full h-4 rounded-md" />
+                <Skeleton className="w-3/4 h-4 rounded-md" />
+                <Skeleton className="w-full h-48 rounded-2xl" />
               </div>
             ))}
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 mb-4">
-              <Flame className="h-8 w-8 text-gray-400" />
+          <div className="text-center py-16 rounded-3xl border border-slate-200/80 bg-white dark:border-slate-800/80 dark:bg-slate-900 p-8 shadow-xs">
+            <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-4 shadow-sm">
+              <Flame className="h-8 w-8" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-              No posts yet
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">
+              No posts in this feed yet
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Be the first to share something!
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-4">
+              Be the first to share your passion project, ask a question, or inspire the community!
             </p>
+            <CreatePostCard />
           </div>
         ) : (
           <div className="space-y-4">
