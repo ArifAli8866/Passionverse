@@ -102,6 +102,7 @@ const ECOSYSTEM_PLATFORMS = [
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState(0);
+  const [heroTab, setHeroTab] = useState<"kanban" | "feed" | "match">("kanban");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(0);
   const [processStep, setProcessStep] = useState(0);
@@ -241,42 +242,42 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-sans selection:bg-[#1A5AF0]/20 selection:text-[#1A5AF0] overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-sans selection:bg-[#7C3AED]/20 selection:text-[#7C3AED] overflow-x-hidden">
 
       {/* 1. FLOATING PILL NAVBAR */}
       <header className="fixed top-4 left-0 right-0 z-50 px-4" role="banner">
         <div className="container mx-auto flex h-16 rounded-full max-w-6xl items-center justify-between px-6 py-2 shadow-sm bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-gray-200/60 dark:border-gray-800">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1A5AF0] text-white shadow-md shadow-[#1A5AF0]/30 transition-transform group-hover:scale-105">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/30 transition-transform group-hover:scale-105">
               <Flame className="h-5 w-5" />
             </div>
             <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
-              Passion<span className="text-[#1A5AF0]">verse</span>
+              Passion<span className="text-[#7C3AED]">verse</span>
             </span>
           </Link>
 
           {/* Nav Links */}
           <nav className="hidden items-center justify-center gap-1 lg:flex" aria-label="Main navigation">
-            <a href="#problems" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#problems" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               Problems
             </a>
-            <a href="#features" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#features" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               Solution
             </a>
-            <a href="#benefits" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#benefits" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               Benefits
             </a>
-            <a href="#process" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#process" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               How It Works
             </a>
-            <a href="#reviews" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#reviews" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               Reviews
             </a>
-            <a href="#pricing" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#pricing" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               Pricing
             </a>
-            <a href="#faqs" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#1A5AF0] transition-colors">
+            <a href="#faqs" className="font-medium rounded-full px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors">
               FAQs
             </a>
           </nav>
@@ -291,7 +292,7 @@ export default function LandingPage() {
             </Link>
             <Link
               to={isAuthenticated ? "/feed" : "/register"}
-              className="inline-flex items-center justify-center gap-2 font-medium rounded-full h-10 px-5 text-sm bg-[#1A5AF0] text-white hover:bg-[#1A5AF0]/90 shadow-md shadow-[#1A5AF0]/25 transition"
+              className="inline-flex items-center justify-center gap-2 font-medium rounded-full h-10 px-5 text-sm bg-[#7C3AED] text-white hover:bg-[#7C3AED]/90 shadow-md shadow-[#7C3AED]/25 transition"
             >
               <span>{isAuthenticated ? "Open Feed" : "Get Started"}</span>
               <ArrowRight className="w-4 h-4" />
@@ -303,7 +304,7 @@ export default function LandingPage() {
       {/* 2. HERO SECTION */}
       <section className="relative overflow-hidden pt-28 pb-20">
         {/* Vibrant Gradient Background with Blue Theme */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1A5AF0] via-indigo-600 to-[#1A5AF0]/90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#7C3AED] via-indigo-600 to-[#7C3AED]/90" />
         {/* Glowing blur mesh blob */}
         <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/15 blur-3xl pointer-events-none" />
 
@@ -367,7 +368,7 @@ export default function LandingPage() {
               className="inline-flex items-center justify-center gap-2 font-semibold rounded-full h-12 px-7 text-sm bg-white text-gray-900 hover:bg-white/90 shadow-xl transition-transform hover:scale-[1.02]"
             >
               <span>{isAuthenticated ? "Launch Dashboard" : "Get Started Free"}</span>
-              <ArrowRight className="w-4 h-4 text-[#1A5AF0]" />
+              <ArrowRight className="w-4 h-4 text-[#7C3AED]" />
             </Link>
             <Link
               to="/discover"
@@ -387,123 +388,349 @@ export default function LandingPage() {
           >
             <div className="rounded-3xl border border-white/20 bg-white/10 p-2.5 backdrop-blur-xl shadow-2xl">
               <div className="rounded-2xl bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 overflow-hidden shadow-2xl text-left">
-                {/* Browser bar */}
-                <div className="bg-gray-100 dark:bg-gray-800/80 px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700/80">
+                {/* Browser bar with interactive SaaS view tabs */}
+                <div className="bg-gray-100/90 dark:bg-gray-800/90 px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 dark:border-gray-700/80">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-400" />
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
-                    <span className="ml-3 text-xs text-gray-500 font-mono hidden sm:inline">
-                      https://passionverse.app/discover
+                    <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                    <span className="ml-2 text-xs text-gray-500 font-mono hidden sm:inline">
+                      https://passionverse.app/workspace
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#1A5AF0]/10 text-[#1A5AF0]">
-                      <Sparkles className="w-3 h-3" /> PassionMatch AI v2.0
-                    </span>
+
+                  {/* Interactive tab buttons */}
+                  <div className="flex items-center gap-1 bg-white dark:bg-gray-900 p-1 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xs text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setHeroTab("kanban")}
+                      className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                        heroTab === "kanban"
+                          ? "bg-violet-600 text-white shadow-xs"
+                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      }`}
+                    >
+                      Kanban Board
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeroTab("feed")}
+                      className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                        heroTab === "feed"
+                          ? "bg-violet-600 text-white shadow-xs"
+                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      }`}
+                    >
+                      Creator Feed
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeroTab("match")}
+                      className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                        heroTab === "match"
+                          ? "bg-violet-600 text-white shadow-xs"
+                          : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      }`}
+                    >
+                      AI Synergy Match
+                    </button>
                   </div>
                 </div>
 
                 {/* Dashboard Inside Mockup */}
-                <div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-6 bg-slate-50/50 dark:bg-gray-900/50">
-                  {/* Left Column: AI Synergy Match Preview */}
-                  <div className="md:col-span-7 space-y-4">
-                    <div className="rounded-2xl border border-indigo-100 dark:border-indigo-950/60 bg-gradient-to-br from-white to-blue-50/40 dark:from-gray-800 dark:to-gray-800/60 p-5 shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={AVATARS[1]}
-                            alt="avatar"
-                            className="w-12 h-12 rounded-full object-cover ring-2 ring-[#1A5AF0]"
-                          />
-                          <div>
-                            <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-1.5 text-sm sm:text-base">
-                              Marcus Vance
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#1A5AF0] text-white">
-                                Robotics
+                <div className="p-4 sm:p-6 bg-slate-50/70 dark:bg-gray-900/60 min-h-[380px]">
+                  {/* View 1: SlothUI Kanban Dashboard */}
+                  {heroTab === "kanban" && (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div className="flex items-center justify-between pb-2 border-b border-gray-200/60 dark:border-gray-800">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-extrabold text-gray-900 dark:text-white">
+                            Sprint Board: Generative Studio v2.4
+                          </h4>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+                            Reference 1 Design
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-400">5 Tasks In Flight</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+                        {/* In Progress Column */}
+                        <div className="p-3 rounded-2xl bg-violet-50/50 dark:bg-violet-950/20 border border-violet-100 dark:border-violet-900/30 space-y-3">
+                          <div className="flex items-center justify-between text-xs font-bold text-violet-900 dark:text-violet-200">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-violet-500" /> In Progress
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-[10px]">2</span>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xs space-y-2.5">
+                            <div className="flex items-center justify-between">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300">
+                                High Priority
                               </span>
-                            </h4>
-                            <p className="text-xs text-gray-500">Autonomous Drones &amp; Embedded C++</p>
+                              <span className="text-[11px] text-gray-400">Oct 18</span>
+                            </div>
+                            <h5 className="text-xs font-bold text-gray-900 dark:text-white">
+                              Design System &amp; Interactive 3D Canvas
+                            </h5>
+                            <div className="space-y-1">
+                              <div className="flex justify-between text-[10px] text-gray-500 font-medium">
+                                <span>Progress</span>
+                                <span>65%</span>
+                              </div>
+                              <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                                <div className="h-full bg-violet-600 rounded-full w-[65%]" />
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between pt-1 border-t border-gray-50 dark:border-gray-700/60">
+                              <div className="flex -space-x-1.5">
+                                <div className="w-5 h-5 rounded-full bg-violet-400 text-[9px] text-white flex items-center justify-center font-bold">SJ</div>
+                                <div className="w-5 h-5 rounded-full bg-indigo-400 text-[9px] text-white flex items-center justify-center font-bold">ER</div>
+                              </div>
+                              <span className="text-[11px] text-gray-400 font-medium">8 comments</span>
+                            </div>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xs space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-300">
+                                Normal
+                              </span>
+                              <span className="text-[11px] text-gray-400">Oct 22</span>
+                            </div>
+                            <h5 className="text-xs font-bold text-gray-900 dark:text-white">
+                              Real-time WebSockets Sync Engine
+                            </h5>
+                            <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                              <div className="h-full bg-sky-500 rounded-full w-[40%]" />
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-xl sm:text-2xl font-black text-[#1A5AF0]">94%</div>
-                          <span className="text-[11px] font-medium text-gray-500">Passion Match</span>
+
+                        {/* Reviewed Column */}
+                        <div className="p-3 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 space-y-3">
+                          <div className="flex items-center justify-between text-xs font-bold text-amber-900 dark:text-amber-200">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-amber-500" /> Reviewed
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 text-[10px]">1</span>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xs space-y-2.5">
+                            <div className="flex items-center justify-between">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-300">
+                                In Review
+                              </span>
+                              <span className="text-[11px] text-gray-400">Oct 16</span>
+                            </div>
+                            <h5 className="text-xs font-bold text-gray-900 dark:text-white">
+                              AI Prompt Optimization Pipeline &amp; Guard
+                            </h5>
+                            <div className="space-y-1">
+                              <div className="flex justify-between text-[10px] text-gray-500 font-medium">
+                                <span>Pass rate</span>
+                                <span>94%</span>
+                              </div>
+                              <div className="h-1.5 w-full rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden">
+                                <div className="h-full bg-amber-500 rounded-full w-[94%]" />
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between pt-1 border-t border-gray-50 dark:border-gray-700/60">
+                              <div className="flex -space-x-1.5">
+                                <div className="w-5 h-5 rounded-full bg-amber-500 text-[9px] text-white flex items-center justify-center font-bold">DK</div>
+                                <div className="w-5 h-5 rounded-full bg-purple-500 text-[9px] text-white flex items-center justify-center font-bold">AR</div>
+                              </div>
+                              <span className="text-[11px] text-emerald-600 font-semibold">Ready to merge</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Completed Column */}
+                        <div className="p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 space-y-3">
+                          <div className="flex items-center justify-between text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Completed
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-[10px]">2</span>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xs space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                Shipped
+                              </span>
+                              <span className="text-[11px] text-gray-400">Oct 12</span>
+                            </div>
+                            <h5 className="text-xs font-bold text-gray-900 dark:text-white">
+                              Audio Waveform Synthesizer
+                            </h5>
+                            <div className="flex items-center justify-between pt-1 text-[11px] text-gray-500">
+                              <span>100% finished</span>
+                              <span className="text-emerald-600 font-semibold">Live in Feed</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                    </div>
+                  )}
 
-                      <div className="mt-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 p-3 text-xs text-gray-700 dark:text-gray-300">
-                        <p className="font-medium text-[#1A5AF0] flex items-center gap-1 mb-1">
-                          <Brain className="w-3.5 h-3.5" /> Complementary Synergy Detected
-                        </p>
-                        Both of you are passionate about autonomous navigation. Marcus brings embedded firmware experience while you have Computer Vision and PyTorch expertise.
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap gap-1.5">
-                        {["Computer Vision", "Python", "ROS2", "Robotics", "Edge AI"].map((tag, idx) => (
-                          <span key={idx} className="text-xs px-2.5 py-1 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium">
-                            {tag}
-                          </span>
+                  {/* View 2: SlothUI Social Feed & Stories */}
+                  {heroTab === "feed" && (
+                    <div className="space-y-4 animate-in fade-in duration-300 text-left">
+                      {/* Stories Carousel */}
+                      <div className="flex items-center gap-3 overflow-x-auto pb-2 border-b border-gray-200/60 dark:border-gray-800">
+                        <div className="flex flex-col items-center gap-1 shrink-0">
+                          <div className="w-11 h-11 rounded-full border-2 border-dashed border-violet-400 flex items-center justify-center text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/40 cursor-pointer">
+                            <Plus className="w-4 h-4" />
+                          </div>
+                          <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400">Add Story</span>
+                        </div>
+                        {["Elena R.", "Marcus V.", "Sarah J.", "David P.", "Amina A."].map((name, i) => (
+                          <div key={i} className="flex flex-col items-center gap-1 shrink-0">
+                            <div className="w-11 h-11 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 via-rose-500 to-violet-600 ring-1 ring-white dark:ring-gray-900">
+                              <img src={AVATARS[i % AVATARS.length]} alt="story" className="w-full h-full rounded-full object-cover" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-700 dark:text-gray-300">{name}</span>
+                          </div>
                         ))}
                       </div>
-                    </div>
 
-                    {/* Second post item */}
-                    <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-4 shadow-sm">
-                      <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                        <span className="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                          <Sparkles className="w-3.5 h-3.5 text-emerald-500" /> PassionGuard: 96% Approved
-                        </span>
-                        <span>2 hours ago</span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">
-                        "Just open-sourced my Arduino-powered automated plant irrigation system with real-time moisture telemetry!"
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Right Column: AI Project Roadmap Blueprint */}
-                  <div className="md:col-span-5 space-y-4">
-                    <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-5 shadow-sm">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#1A5AF0]">
-                          Generated Roadmap
-                        </span>
-                        <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">
-                          Active Project
-                        </span>
-                      </div>
-                      <h4 className="font-bold text-gray-900 dark:text-white text-sm">
-                        Smart Home Energy Optimizer
-                      </h4>
-                      <p className="text-xs text-gray-500 mt-1">4-Week Collaborative Blueprint</p>
-
-                      <div className="mt-4 space-y-2.5">
-                        <div className="flex items-center gap-2 text-xs">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                          <span className="line-through text-gray-400">Week 1: Sensor data pipeline &amp; MQTT</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs">
-                          <div className="w-4 h-4 rounded-full border-2 border-[#1A5AF0] flex items-center justify-center shrink-0">
-                            <div className="w-2 h-2 rounded-full bg-[#1A5AF0]" />
+                      {/* Post Card */}
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div className="md:col-span-8 p-4 rounded-2xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                              <img src={AVATARS[2]} alt="avatar" className="w-9 h-9 rounded-full object-cover ring-2 ring-violet-500" />
+                              <div>
+                                <h5 className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1">
+                                  Elena Rostova
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 font-semibold">Creator</span>
+                                </h5>
+                                <span className="text-[10px] text-gray-400">@elena_r &bull; 2h ago</span>
+                              </div>
+                            </div>
+                            <span className="text-xs text-violet-600 font-semibold">#Featured</span>
                           </div>
-                          <span className="font-medium text-gray-900 dark:text-white">Week 2: Anomaly prediction model</span>
+
+                          <p className="text-xs text-gray-800 dark:text-gray-200 leading-relaxed">
+                            Just finalized our generative ambient audio synth using Web Audio API and custom shaders! 🎶 Testing real-time MIDI parameters with the community.
+                          </p>
+
+                          <div className="flex flex-wrap gap-1.5">
+                            {["#GenerativeAudio", "#WebAudio", "#React", "#CreativeCoding"].map((tag, i) => (
+                              <span key={i} className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-violet-50 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+
+                          {/* Action Row */}
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/60 text-xs text-gray-500">
+                            <span className="font-semibold text-rose-500">&hearts; 142 Likes</span>
+                            <span>28 Comments</span>
+                            <span>12 Shares</span>
+                            <span className="text-violet-600 font-semibold">Saved</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                          <div className="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 shrink-0" />
-                          <span>Week 3: Real-time React dashboard</span>
+
+                        {/* Right Widget Preview */}
+                        <div className="md:col-span-4 p-4 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-md flex flex-col justify-between space-y-3">
+                          <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-violet-200">SlothUI Pro</span>
+                            <h5 className="text-xs font-bold mt-1">Upgrade to Creator Pro</h5>
+                            <p className="text-[11px] text-violet-100 mt-1 leading-snug">
+                              Unlock unlimited AI roadmaps, high-priority matching, and custom workspaces.
+                            </p>
+                          </div>
+                          <button className="w-full py-1.5 rounded-xl bg-white text-violet-700 text-xs font-bold hover:bg-violet-50 transition shadow-xs">
+                            Learn More
+                          </button>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                          <div className="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 shrink-0" />
-                          <span>Week 4: Beta launch &amp; documentation</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* View 3: AI Synergy & Blueprint Match */}
+                  {heroTab === "match" && (
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-5 animate-in fade-in duration-300 text-left">
+                      <div className="md:col-span-7 space-y-4">
+                        <div className="rounded-2xl border border-violet-100 dark:border-violet-950/60 bg-gradient-to-br from-white to-violet-50/40 dark:from-gray-800 dark:to-gray-800/60 p-5 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <img src={AVATARS[1]} alt="avatar" className="w-12 h-12 rounded-full object-cover ring-2 ring-violet-600" />
+                              <div>
+                                <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5 text-sm sm:text-base">
+                                  Marcus Vance
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-violet-600 text-white">
+                                    Robotics
+                                  </span>
+                                </h4>
+                                <p className="text-xs text-gray-500">Autonomous Drones &amp; Embedded C++</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-xl sm:text-2xl font-black text-violet-600">94%</div>
+                              <span className="text-[11px] font-semibold text-gray-500">Passion Match</span>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 rounded-xl bg-violet-50/70 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 p-3 text-xs text-gray-700 dark:text-gray-300">
+                            <p className="font-bold text-violet-700 dark:text-violet-300 flex items-center gap-1 mb-1">
+                              <Brain className="w-3.5 h-3.5" /> Complementary Synergy Detected
+                            </p>
+                            Both of you are passionate about autonomous robotics. Marcus brings embedded firmware and hardware telemetry while you bring Computer Vision and PyTorch expertise.
+                          </div>
+
+                          <div className="mt-4 flex flex-wrap gap-1.5">
+                            {["Computer Vision", "Python", "ROS2", "Robotics", "Edge AI"].map((tag, idx) => (
+                              <span key={idx} className="text-xs px-2.5 py-1 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
 
-                      <button className="w-full mt-4 py-2 rounded-xl bg-[#1A5AF0] text-white text-xs font-semibold hover:bg-[#1A5AF0]/90 transition">
-                        Join Project Team
-                      </button>
+                      <div className="md:col-span-5 space-y-4">
+                        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-5 shadow-sm">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-bold uppercase tracking-wider text-violet-600">
+                              AI Generated Blueprint
+                            </span>
+                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-medium">
+                              Active Project
+                            </span>
+                          </div>
+                          <h4 className="font-bold text-gray-900 dark:text-white text-sm">
+                            Autonomous Rover with Visual SLAM
+                          </h4>
+                          <p className="text-xs text-gray-500 mt-1">4-Week Collaborative Blueprint</p>
+
+                          <div className="mt-4 space-y-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                              <span className="line-through text-gray-400">Week 1: ROS2 Telemetry &amp; Motors</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 rounded-full border-2 border-violet-600 flex items-center justify-center shrink-0">
+                                <div className="w-2 h-2 rounded-full bg-violet-600" />
+                              </div>
+                              <span className="font-medium text-gray-900 dark:text-white">Week 2: Visual SLAM Mapping</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-400">
+                              <div className="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 shrink-0" />
+                              <span>Week 3: Obstacle Avoidance Net</span>
+                            </div>
+                          </div>
+
+                          <button className="w-full mt-4 py-2 rounded-xl bg-violet-600 text-white text-xs font-semibold hover:bg-violet-700 transition">
+                            Join Project Workspace
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -515,8 +742,8 @@ export default function LandingPage() {
               Empowering Creators From Leading Communities
             </p>
             <div className="relative w-full overflow-hidden">
-              <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-[#1A5AF0] to-transparent" />
-              <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-[#1A5AF0] to-transparent" />
+              <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-20 bg-gradient-to-r from-[#7C3AED] to-transparent" />
+              <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-20 bg-gradient-to-l from-[#7C3AED] to-transparent" />
               
               <div className="flex gap-8 items-center justify-center flex-wrap py-2 text-white/80 font-medium text-sm">
                 {["GitHub Makers", "Figma Designers", "Product Hunt", "Discord Hackers", "Hugging Face AI", "Reddit r/buildinpublic", "Dev.to"].map((comm, idx) => (
@@ -538,7 +765,7 @@ export default function LandingPage() {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/80 backdrop-blur-sm px-3.5 py-1.5 text-sm font-medium">
-            <AlertTriangle className="w-4 h-4 text-[#1A5AF0]" />
+            <AlertTriangle className="w-4 h-4 text-[#7C3AED]" />
             <span className="text-gray-700 dark:text-gray-300">Problems</span>
           </div>
 
@@ -563,9 +790,9 @@ export default function LandingPage() {
                   return (
                     <div
                       key={i}
-                      className="flex min-w-[320px] max-w-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 px-8 py-7 shadow-sm hover:border-[#1A5AF0]/40 transition-colors text-center"
+                      className="flex min-w-[320px] max-w-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 px-8 py-7 shadow-sm hover:border-[#7C3AED]/40 transition-colors text-center"
                     >
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#1A5AF0]/10 text-[#1A5AF0]">
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#7C3AED]/10 text-[#7C3AED]">
                         <Icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-base font-semibold text-gray-900 dark:text-white">
@@ -591,9 +818,9 @@ export default function LandingPage() {
                   return (
                     <div
                       key={i}
-                      className="flex min-w-[320px] max-w-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 px-8 py-7 shadow-sm hover:border-[#1A5AF0]/40 transition-colors text-center"
+                      className="flex min-w-[320px] max-w-[360px] flex-col items-center justify-center rounded-2xl border border-gray-200/90 dark:border-gray-800 bg-white dark:bg-gray-900 px-8 py-7 shadow-sm hover:border-[#7C3AED]/40 transition-colors text-center"
                     >
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#1A5AF0]/10 text-[#1A5AF0]">
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#7C3AED]/10 text-[#7C3AED]">
                         <Icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-base font-semibold text-gray-900 dark:text-white">
@@ -620,7 +847,7 @@ export default function LandingPage() {
           {/* Badge */}
           <div className="mb-4 flex justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-              <Sparkles className="w-4 h-4 text-[#1A5AF0]" />
+              <Sparkles className="w-4 h-4 text-[#7C3AED]" />
               <span className="text-gray-700 dark:text-gray-300">Solution</span>
             </div>
           </div>
@@ -643,11 +870,11 @@ export default function LandingPage() {
                   onClick={() => setActiveTab(idx)}
                   className={`flex items-center gap-3 rounded-full px-5 py-3 text-sm font-semibold transition-all shrink-0 cursor-pointer ${
                     isActive
-                      ? "bg-[#1A5AF0] text-white shadow-lg shadow-[#1A5AF0]/25 scale-[1.02]"
-                      : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#1A5AF0]/50"
+                      ? "bg-[#7C3AED] text-white shadow-lg shadow-[#7C3AED]/25 scale-[1.02]"
+                      : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#7C3AED]/50"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#1A5AF0]"}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-[#7C3AED]"}`} />
                   <span>{tab.title}</span>
                 </button>
               );
@@ -660,17 +887,17 @@ export default function LandingPage() {
           </p>
 
           {/* Feature Interactive Showcase Card */}
-          <div className="relative mx-auto mt-8 max-w-5xl rounded-3xl bg-[#1A5AF0]/5 dark:bg-[#1A5AF0]/10 border border-[#1A5AF0]/20 p-6 sm:p-10 text-left">
+          <div className="relative mx-auto mt-8 max-w-5xl rounded-3xl bg-[#7C3AED]/5 dark:bg-[#7C3AED]/10 border border-[#7C3AED]/20 p-6 sm:p-10 text-left">
             {/* Arrows */}
             <button
               onClick={() => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1))}
-              className="absolute left-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 hover:text-[#1A5AF0] z-20 cursor-pointer"
+              className="absolute left-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 hover:text-[#7C3AED] z-20 cursor-pointer"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => setActiveTab((prev) => (prev === 3 ? 0 : prev + 1))}
-              className="absolute right-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 hover:text-[#1A5AF0] z-20 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 hover:text-[#7C3AED] z-20 cursor-pointer"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -687,18 +914,18 @@ export default function LandingPage() {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-gray-100 dark:border-gray-800">
                     <div className="flex items-center gap-4">
-                      <img src={AVATARS[0]} alt="avatar" className="w-16 h-16 rounded-full object-cover ring-4 ring-[#1A5AF0]/20" />
+                      <img src={AVATARS[0]} alt="avatar" className="w-16 h-16 rounded-full object-cover ring-4 ring-[#7C3AED]/20" />
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="text-xl font-bold text-gray-900 dark:text-white">Alex Rivera</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#1A5AF0]/10 text-[#1A5AF0]">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#7C3AED]/10 text-[#7C3AED]">
                             96% Synergy
                           </span>
                         </div>
                         <p className="text-sm text-gray-500">Full-Stack &amp; Applied Machine Learning</p>
                       </div>
                     </div>
-                    <button className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#1A5AF0] text-white text-sm font-semibold hover:bg-[#1A5AF0]/90 transition shadow-md">
+                    <button className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#7C3AED] text-white text-sm font-semibold hover:bg-[#7C3AED]/90 transition shadow-md">
                       <span>Propose Collaboration</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
@@ -706,7 +933,7 @@ export default function LandingPage() {
 
                   <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="rounded-xl bg-blue-50/60 dark:bg-blue-950/20 p-4 border border-blue-100 dark:border-blue-900/40">
-                      <h4 className="text-sm font-bold text-[#1A5AF0] flex items-center gap-1.5 mb-2">
+                      <h4 className="text-sm font-bold text-[#7C3AED] flex items-center gap-1.5 mb-2">
                         <Sparkles className="w-4 h-4" /> Why You Match
                       </h4>
                       <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -739,7 +966,7 @@ export default function LandingPage() {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-gray-800">
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-[#1A5AF0]">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#7C3AED]">
                         AI Project Blueprint
                       </span>
                       <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
@@ -754,17 +981,17 @@ export default function LandingPage() {
 
                   <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                      <span className="text-xs font-bold text-[#1A5AF0]">Phase 1 (Week 1)</span>
+                      <span className="text-xs font-bold text-[#7C3AED]">Phase 1 (Week 1)</span>
                       <h5 className="font-semibold text-sm text-gray-900 dark:text-white mt-1">Hardware &amp; Camera Loop</h5>
                       <p className="text-xs text-gray-500 mt-1">ESP32-CAM trigger circuit and battery sleep mode configuration.</p>
                     </div>
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                      <span className="text-xs font-bold text-[#1A5AF0]">Phase 2 (Weeks 2-3)</span>
+                      <span className="text-xs font-bold text-[#7C3AED]">Phase 2 (Weeks 2-3)</span>
                       <h5 className="font-semibold text-sm text-gray-900 dark:text-white mt-1">Model Inference</h5>
                       <p className="text-xs text-gray-500 mt-1">Quantized MobileNet model recognizing local birds and mammals.</p>
                     </div>
                     <div className="rounded-xl border border-gray-200 dark:border-gray-800 p-4">
-                      <span className="text-xs font-bold text-[#1A5AF0]">Phase 3 (Week 4)</span>
+                      <span className="text-xs font-bold text-[#7C3AED]">Phase 3 (Week 4)</span>
                       <h5 className="font-semibold text-sm text-gray-900 dark:text-white mt-1">Dashboard &amp; Sync</h5>
                       <p className="text-xs text-gray-500 mt-1">Sync findings to community map with location and timestamps.</p>
                     </div>
@@ -805,7 +1032,7 @@ export default function LandingPage() {
 
                   <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
                     <span className="font-semibold text-gray-600 dark:text-gray-400">Detected Taxonomies:</span>
-                    <span className="px-2.5 py-1 rounded-full bg-blue-100 text-[#1A5AF0] font-medium">Audio Electronics</span>
+                    <span className="px-2.5 py-1 rounded-full bg-blue-100 text-[#7C3AED] font-medium">Audio Electronics</span>
                     <span className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 font-medium">Hardware</span>
                     <span className="px-2.5 py-1 rounded-full bg-purple-100 text-purple-700 font-medium">Music Tech</span>
                   </div>
@@ -837,7 +1064,7 @@ export default function LandingPage() {
                         key={i}
                         className={`flex items-center justify-between p-3.5 rounded-xl border ${
                           item.active
-                            ? "border-[#1A5AF0] bg-blue-50/50 dark:bg-blue-950/20"
+                            ? "border-[#7C3AED] bg-blue-50/50 dark:bg-blue-950/20"
                             : "border-gray-200 dark:border-gray-800"
                         }`}
                       >
@@ -845,8 +1072,8 @@ export default function LandingPage() {
                           {item.done ? (
                             <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                           ) : item.active ? (
-                            <div className="w-5 h-5 rounded-full border-2 border-[#1A5AF0] flex items-center justify-center">
-                              <div className="w-2.5 h-2.5 rounded-full bg-[#1A5AF0]" />
+                            <div className="w-5 h-5 rounded-full border-2 border-[#7C3AED] flex items-center justify-center">
+                              <div className="w-2.5 h-2.5 rounded-full bg-[#7C3AED]" />
                             </div>
                           ) : (
                             <div className="w-5 h-5 rounded-full border border-gray-300 dark:border-gray-600" />
@@ -875,7 +1102,7 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto text-center mb-16">
           <div className="mb-4 flex justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-              <Zap className="w-4 h-4 text-[#1A5AF0]" />
+              <Zap className="w-4 h-4 text-[#7C3AED]" />
               <span className="text-gray-700 dark:text-gray-300">Benefits</span>
             </div>
           </div>
@@ -889,8 +1116,8 @@ export default function LandingPage() {
 
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Benefit 1 */}
-          <div className="group rounded-3xl border border-gray-200/90 dark:border-gray-800 p-8 shadow-sm transition hover:-translate-y-1.5 hover:shadow-lg hover:border-[#1A5AF0]/40 bg-white dark:bg-gray-900">
-            <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-[#1A5AF0] text-white shadow-md shadow-[#1A5AF0]/20 group-hover:scale-105 transition-transform">
+          <div className="group rounded-3xl border border-gray-200/90 dark:border-gray-800 p-8 shadow-sm transition hover:-translate-y-1.5 hover:shadow-lg hover:border-[#7C3AED]/40 bg-white dark:bg-gray-900">
+            <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/20 group-hover:scale-105 transition-transform">
               <Clock3 className="w-7 h-7" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Save Weeks of Searching</h3>
@@ -900,8 +1127,8 @@ export default function LandingPage() {
           </div>
 
           {/* Benefit 2 */}
-          <div className="group rounded-3xl border border-gray-200/90 dark:border-gray-800 p-8 shadow-sm transition hover:-translate-y-1.5 hover:shadow-lg hover:border-[#1A5AF0]/40 bg-white dark:bg-gray-900">
-            <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-[#1A5AF0] text-white shadow-md shadow-[#1A5AF0]/20 group-hover:scale-105 transition-transform">
+          <div className="group rounded-3xl border border-gray-200/90 dark:border-gray-800 p-8 shadow-sm transition hover:-translate-y-1.5 hover:shadow-lg hover:border-[#7C3AED]/40 bg-white dark:bg-gray-900">
+            <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/20 group-hover:scale-105 transition-transform">
               <Target className="w-7 h-7" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Stay Fully Accountable</h3>
@@ -911,8 +1138,8 @@ export default function LandingPage() {
           </div>
 
           {/* Benefit 3 */}
-          <div className="group rounded-3xl border border-gray-200/90 dark:border-gray-800 p-8 shadow-sm transition hover:-translate-y-1.5 hover:shadow-lg hover:border-[#1A5AF0]/40 bg-white dark:bg-gray-900">
-            <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-[#1A5AF0] text-white shadow-md shadow-[#1A5AF0]/20 group-hover:scale-105 transition-transform">
+          <div className="group rounded-3xl border border-gray-200/90 dark:border-gray-800 p-8 shadow-sm transition hover:-translate-y-1.5 hover:shadow-lg hover:border-[#7C3AED]/40 bg-white dark:bg-gray-900">
+            <div className="mb-6 flex size-14 items-center justify-center rounded-full bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/20 group-hover:scale-105 transition-transform">
               <Shield className="w-7 h-7" />
             </div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Pure Inspiration, Zero Spam</h3>
@@ -929,7 +1156,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="flex justify-center mb-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-                <Workflow className="w-4 h-4 text-[#1A5AF0]" />
+                <Workflow className="w-4 h-4 text-[#7C3AED]" />
                 <span className="text-gray-700 dark:text-gray-300">Process</span>
               </div>
             </div>
@@ -952,7 +1179,7 @@ export default function LandingPage() {
                     onClick={() => setProcessStep(idx)}
                     className={`w-full text-left p-6 rounded-2xl border transition-all cursor-pointer ${
                       isActive
-                        ? "bg-white dark:bg-gray-800 border-[#1A5AF0] shadow-md shadow-[#1A5AF0]/10"
+                        ? "bg-white dark:bg-gray-800 border-[#7C3AED] shadow-md shadow-[#7C3AED]/10"
                         : "bg-white/60 dark:bg-gray-800/40 border-gray-200 dark:border-gray-700 hover:border-gray-300"
                     }`}
                   >
@@ -960,7 +1187,7 @@ export default function LandingPage() {
                       <div
                         className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors ${
                           isActive
-                            ? "bg-[#1A5AF0] text-white"
+                            ? "bg-[#7C3AED] text-white"
                             : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                         }`}
                       >
@@ -977,7 +1204,7 @@ export default function LandingPage() {
             </div>
 
             {/* Interactive Process Illustration Preview */}
-            <div className="rounded-3xl bg-[#1A5AF0]/5 dark:bg-[#1A5AF0]/10 border border-[#1A5AF0]/20 p-8 min-h-[380px] flex items-center justify-center">
+            <div className="rounded-3xl bg-[#7C3AED]/5 dark:bg-[#7C3AED]/10 border border-[#7C3AED]/20 p-8 min-h-[380px] flex items-center justify-center">
               <AnimatePresence mode="wait">
                 {processStep === 0 && (
                   <motion.div
@@ -987,7 +1214,7 @@ export default function LandingPage() {
                     exit={{ opacity: 0, y: -15 }}
                     className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl border border-gray-200 dark:border-gray-700"
                   >
-                    <div className="flex items-center gap-2 mb-4 text-[#1A5AF0] font-bold text-xs uppercase tracking-wider">
+                    <div className="flex items-center gap-2 mb-4 text-[#7C3AED] font-bold text-xs uppercase tracking-wider">
                       <Palette className="w-4 h-4" /> Step 1: Profile Taxonomy Setup
                     </div>
                     <h4 className="font-bold text-gray-900 dark:text-white text-base">Select Your Passions &amp; Skills</h4>
@@ -1007,7 +1234,7 @@ export default function LandingPage() {
                           key={i}
                           className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
                             item.active
-                              ? "bg-[#1A5AF0] text-white shadow-sm"
+                              ? "bg-[#7C3AED] text-white shadow-sm"
                               : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                           }`}
                         >
@@ -1026,16 +1253,16 @@ export default function LandingPage() {
                     exit={{ opacity: 0, y: -15 }}
                     className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl border border-gray-200 dark:border-gray-700"
                   >
-                    <div className="flex items-center gap-2 mb-4 text-[#1A5AF0] font-bold text-xs uppercase tracking-wider">
+                    <div className="flex items-center gap-2 mb-4 text-[#7C3AED] font-bold text-xs uppercase tracking-wider">
                       <Brain className="w-4 h-4" /> Step 2: Semantic Compatibility
                     </div>
                     <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-bold text-gray-900 dark:text-white">Synergy Score</span>
-                        <span className="text-lg font-black text-[#1A5AF0]">95% Match</span>
+                        <span className="text-lg font-black text-[#7C3AED]">95% Match</span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 h-2.5 rounded-full overflow-hidden">
-                        <div className="bg-[#1A5AF0] h-full rounded-full w-[95%]" />
+                        <div className="bg-[#7C3AED] h-full rounded-full w-[95%]" />
                       </div>
                       <p className="mt-3 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
                         Matches your skill gaps with creators eager to explore the same challenges.
@@ -1052,7 +1279,7 @@ export default function LandingPage() {
                     exit={{ opacity: 0, y: -15 }}
                     className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-xl border border-gray-200 dark:border-gray-700"
                   >
-                    <div className="flex items-center gap-2 mb-4 text-[#1A5AF0] font-bold text-xs uppercase tracking-wider">
+                    <div className="flex items-center gap-2 mb-4 text-[#7C3AED] font-bold text-xs uppercase tracking-wider">
                       <Rocket className="w-4 h-4" /> Step 3: Collaborative Workspace
                     </div>
                     <h4 className="font-bold text-gray-900 dark:text-white text-base">Ship, Showcase &amp; Inspire</h4>
@@ -1068,7 +1295,7 @@ export default function LandingPage() {
                           <p className="text-[11px] text-gray-500">Autonomous Weather Station v1.0</p>
                         </div>
                       </div>
-                      <span className="text-xs font-semibold text-[#1A5AF0]">View Showcase</span>
+                      <span className="text-xs font-semibold text-[#7C3AED]">View Showcase</span>
                     </div>
                   </motion.div>
                 )}
@@ -1082,7 +1309,7 @@ export default function LandingPage() {
       <section className="relative w-full overflow-hidden py-24 bg-white dark:bg-gray-950">
         <div className="relative mx-auto flex max-w-6xl flex-col items-center justify-center px-6 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-            <LayoutDashboard className="w-4 h-4 text-[#1A5AF0]" />
+            <LayoutDashboard className="w-4 h-4 text-[#7C3AED]" />
             <span className="text-gray-700 dark:text-gray-300">Ecosystem</span>
           </div>
 
@@ -1104,7 +1331,7 @@ export default function LandingPage() {
                 return (
                   <div
                     key={idx}
-                    className="flex min-w-[240px] items-center gap-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-4 shadow-sm hover:border-[#1A5AF0]/40 transition"
+                    className="flex min-w-[240px] items-center gap-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 py-4 shadow-sm hover:border-[#7C3AED]/40 transition"
                   >
                     <div className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">
                       <Icon className="w-6 h-6" />
@@ -1126,7 +1353,7 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto text-center mb-16">
           <div className="mb-4 flex justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-              <Star className="w-4 h-4 text-[#1A5AF0]" />
+              <Star className="w-4 h-4 text-[#7C3AED]" />
               <span className="text-gray-700 dark:text-gray-300">Reviews</span>
             </div>
           </div>
@@ -1153,7 +1380,7 @@ export default function LandingPage() {
                       <p className="text-xs text-gray-500">{rev.role}</p>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#1A5AF0]/10 text-[#1A5AF0]">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#7C3AED]/10 text-[#7C3AED]">
                     {rev.badge}
                   </span>
                 </div>
@@ -1177,7 +1404,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6 text-center">
           <div className="flex justify-center mb-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-              <DollarSign className="w-4 h-4 text-[#1A5AF0]" />
+              <DollarSign className="w-4 h-4 text-[#7C3AED]" />
               <span className="text-gray-700 dark:text-gray-300">Plans and Pricing</span>
             </div>
           </div>
@@ -1196,10 +1423,10 @@ export default function LandingPage() {
             </span>
             <button
               onClick={() => setBillingPeriod((prev) => (prev === "monthly" ? "yearly" : "monthly"))}
-              className="relative h-7 w-13 rounded-full bg-[#1A5AF0]/20 p-1 transition cursor-pointer"
+              className="relative h-7 w-13 rounded-full bg-[#7C3AED]/20 p-1 transition cursor-pointer"
             >
               <div
-                className={`size-5 rounded-full bg-[#1A5AF0] shadow-sm transition-transform ${
+                className={`size-5 rounded-full bg-[#7C3AED] shadow-sm transition-transform ${
                   billingPeriod === "yearly" ? "translate-x-6" : "translate-x-0"
                 }`}
               />
@@ -1256,8 +1483,8 @@ export default function LandingPage() {
             </div>
 
             {/* Tier 2: Creator Pro (Recommended) */}
-            <div className="relative rounded-3xl border-2 border-[#1A5AF0] bg-white dark:bg-gray-900 p-8 shadow-xl ring-4 ring-[#1A5AF0]/10 flex flex-col justify-between">
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#1A5AF0] px-4 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-md">
+            <div className="relative rounded-3xl border-2 border-[#7C3AED] bg-white dark:bg-gray-900 p-8 shadow-xl ring-4 ring-[#7C3AED]/10 flex flex-col justify-between">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#7C3AED] px-4 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-md">
                 Recommended
               </div>
               <div>
@@ -1272,7 +1499,7 @@ export default function LandingPage() {
 
                 <Link
                   to="/register"
-                  className="mt-6 w-full inline-flex items-center justify-center rounded-full h-11 px-5 text-sm font-semibold bg-[#1A5AF0] text-white hover:bg-[#1A5AF0]/90 transition shadow-md shadow-[#1A5AF0]/25"
+                  className="mt-6 w-full inline-flex items-center justify-center rounded-full h-11 px-5 text-sm font-semibold bg-[#7C3AED] text-white hover:bg-[#7C3AED]/90 transition shadow-md shadow-[#7C3AED]/25"
                 >
                   Start Building
                 </Link>
@@ -1354,7 +1581,7 @@ export default function LandingPage() {
       <section id="faqs" className="relative overflow-hidden py-24 bg-slate-50/70 dark:bg-gray-900/40 border-t border-gray-200/60 dark:border-gray-800">
         <div className="relative mx-auto flex max-w-4xl flex-col items-center justify-center px-6 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3.5 py-1.5 text-sm font-medium">
-            <HelpCircle className="w-4 h-4 text-[#1A5AF0]" />
+            <HelpCircle className="w-4 h-4 text-[#7C3AED]" />
             <span className="text-gray-700 dark:text-gray-300">FAQs</span>
           </div>
 
@@ -1375,12 +1602,12 @@ export default function LandingPage() {
                 >
                   <button
                     onClick={() => setExpandedFaq(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-gray-900 dark:text-white text-base cursor-pointer hover:text-[#1A5AF0] transition-colors"
+                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-gray-900 dark:text-white text-base cursor-pointer hover:text-[#7C3AED] transition-colors"
                   >
                     <span>{faq.q}</span>
                     <div
                       className={`size-8 rounded-full flex items-center justify-center transition-colors shrink-0 ml-4 ${
-                        isOpen ? "bg-[#1A5AF0] text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                        isOpen ? "bg-[#7C3AED] text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
                       }`}
                     >
                       {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -1408,7 +1635,7 @@ export default function LandingPage() {
 
       {/* 11. FLOATING BOTTOM CTA CARD */}
       <section className="px-6 py-20 bg-white dark:bg-gray-950">
-        <div className="relative overflow-hidden mx-auto max-w-6xl rounded-[2.5rem] bg-gradient-to-br from-[#1A5AF0] via-indigo-600 to-[#1A5AF0]/90 text-white p-10 sm:p-16 lg:p-20 shadow-2xl text-center">
+        <div className="relative overflow-hidden mx-auto max-w-6xl rounded-[2.5rem] bg-gradient-to-br from-[#7C3AED] via-indigo-600 to-[#7C3AED]/90 text-white p-10 sm:p-16 lg:p-20 shadow-2xl text-center">
           {/* Subtle glowing blur blob */}
           <div className="absolute left-1/2 top-1/2 size-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/15 blur-3xl pointer-events-none" />
 
@@ -1440,7 +1667,7 @@ export default function LandingPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-full h-12 px-8 text-sm font-bold bg-white text-gray-900 hover:bg-white/95 shadow-xl transition-transform hover:scale-105"
               >
                 <span>{isAuthenticated ? "Go to Live Feed" : "Get Started Free"}</span>
-                <ArrowRight className="w-4 h-4 text-[#1A5AF0]" />
+                <ArrowRight className="w-4 h-4 text-[#7C3AED]" />
               </Link>
               <Link
                 to="/discover"
@@ -1461,11 +1688,11 @@ export default function LandingPage() {
             {/* Col 1: Brand Info */}
             <div className="md:col-span-5 space-y-4">
               <Link to="/" className="flex items-center gap-2.5">
-                <div className="flex size-9 items-center justify-center rounded-full bg-[#1A5AF0] text-white">
+                <div className="flex size-9 items-center justify-center rounded-full bg-[#7C3AED] text-white">
                   <Flame className="w-5 h-5" />
                 </div>
                 <span className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  Passion<span className="text-[#1A5AF0]">verse</span>
+                  Passion<span className="text-[#7C3AED]">verse</span>
                 </span>
               </Link>
               <p className="text-sm text-gray-500 max-w-sm leading-relaxed">
@@ -1485,11 +1712,11 @@ export default function LandingPage() {
                   Product
                 </h4>
                 <ul className="space-y-2.5 text-gray-600 dark:text-gray-400">
-                  <li><Link to="/discover" className="hover:text-[#1A5AF0] transition">Discover</Link></li>
-                  <li><Link to="/feed" className="hover:text-[#1A5AF0] transition">Live Feed</Link></li>
-                  <li><a href="#features" className="hover:text-[#1A5AF0] transition">AI Synergy Match</a></li>
-                  <li><a href="#features" className="hover:text-[#1A5AF0] transition">Project Generator</a></li>
-                  <li><a href="#features" className="hover:text-[#1A5AF0] transition">PassionGuard AI</a></li>
+                  <li><Link to="/discover" className="hover:text-[#7C3AED] transition">Discover</Link></li>
+                  <li><Link to="/feed" className="hover:text-[#7C3AED] transition">Live Feed</Link></li>
+                  <li><a href="#features" className="hover:text-[#7C3AED] transition">AI Synergy Match</a></li>
+                  <li><a href="#features" className="hover:text-[#7C3AED] transition">Project Generator</a></li>
+                  <li><a href="#features" className="hover:text-[#7C3AED] transition">PassionGuard AI</a></li>
                 </ul>
               </div>
 
@@ -1498,10 +1725,10 @@ export default function LandingPage() {
                   Community
                 </h4>
                 <ul className="space-y-2.5 text-gray-600 dark:text-gray-400">
-                  <li><a href="https://github.com/ArifAli8866/Passionverse" target="_blank" rel="noopener noreferrer" className="hover:text-[#1A5AF0] transition">GitHub Repo</a></li>
-                  <li><a href="#reviews" className="hover:text-[#1A5AF0] transition">Creator Stories</a></li>
-                  <li><a href="#process" className="hover:text-[#1A5AF0] transition">Project Blueprints</a></li>
-                  <li><Link to="/login" className="hover:text-[#1A5AF0] transition">Sign In</Link></li>
+                  <li><a href="https://github.com/ArifAli8866/Passionverse" target="_blank" rel="noopener noreferrer" className="hover:text-[#7C3AED] transition">GitHub Repo</a></li>
+                  <li><a href="#reviews" className="hover:text-[#7C3AED] transition">Creator Stories</a></li>
+                  <li><a href="#process" className="hover:text-[#7C3AED] transition">Project Blueprints</a></li>
+                  <li><Link to="/login" className="hover:text-[#7C3AED] transition">Sign In</Link></li>
                 </ul>
               </div>
 
@@ -1510,10 +1737,10 @@ export default function LandingPage() {
                   Legal &amp; Trust
                 </h4>
                 <ul className="space-y-2.5 text-gray-600 dark:text-gray-400">
-                  <li><a href="#faqs" className="hover:text-[#1A5AF0] transition">Privacy Policy</a></li>
-                  <li><a href="#faqs" className="hover:text-[#1A5AF0] transition">Community Guidelines</a></li>
-                  <li><a href="#faqs" className="hover:text-[#1A5AF0] transition">Open Source License</a></li>
-                  <li><a href="#faqs" className="hover:text-[#1A5AF0] transition">Security &amp; RLS</a></li>
+                  <li><a href="#faqs" className="hover:text-[#7C3AED] transition">Privacy Policy</a></li>
+                  <li><a href="#faqs" className="hover:text-[#7C3AED] transition">Community Guidelines</a></li>
+                  <li><a href="#faqs" className="hover:text-[#7C3AED] transition">Open Source License</a></li>
+                  <li><a href="#faqs" className="hover:text-[#7C3AED] transition">Security &amp; RLS</a></li>
                 </ul>
               </div>
             </div>

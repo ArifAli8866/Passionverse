@@ -1,4 +1,4 @@
-// Settings v2 - avatar upload enabled
+// Settings v2 - SaaS styled
 import { useState, useRef } from "react";
 import { useAuth } from "@/store/auth";
 import { useTheme } from "@/store/theme";
@@ -12,8 +12,21 @@ import { HOBBIES } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import toast from "react-hot-toast";
 import {
-  User, Bell, Shield, Palette, LogOut, Save,
-  Sun, Moon, Smartphone, Camera, Trash2,
+  User,
+  Bell,
+  Shield,
+  Palette,
+  LogOut,
+  Save,
+  Sun,
+  Moon,
+  Smartphone,
+  Camera,
+  Trash2,
+  Sparkles,
+  Plus,
+  AlertTriangle,
+  Check,
 } from "lucide-react";
 
 type SettingsTab = "profile" | "appearance" | "notifications" | "privacy";
@@ -35,7 +48,9 @@ export default function SettingsPage() {
     location: user?.location || "",
     website: user?.website || "",
   });
-  const [selectedHobbies, setSelectedHobbies] = useState<string[]>(user?.hobbies || []);
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>(
+    user?.hobbies || []
+  );
   const [customHobby, setCustomHobby] = useState("");
   const [privacy, setPrivacy] = useState({
     privateProfile: false,
@@ -51,10 +66,10 @@ export default function SettingsPage() {
   });
 
   const tabs = [
-    { id: "profile" as const, label: "Profile", icon: User },
+    { id: "profile" as const, label: "Profile Info", icon: User },
     { id: "appearance" as const, label: "Appearance", icon: Palette },
     { id: "notifications" as const, label: "Notifications", icon: Bell },
-    { id: "privacy" as const, label: "Privacy", icon: Shield },
+    { id: "privacy" as const, label: "Privacy & Security", icon: Shield },
   ];
 
   const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,8 +92,13 @@ export default function SettingsPage() {
     const { data, error } = await supabase.storage
       .from("avatars")
       .upload(path, avatarFile, { upsert: true });
-    if (error) { toast.error("Failed to upload avatar"); return null; }
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(data.path);
+    if (error) {
+      toast.error("Failed to upload avatar");
+      return null;
+    }
+    const { data: urlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(data.path);
     return urlData.publicUrl;
   };
 
@@ -92,15 +112,19 @@ export default function SettingsPage() {
         if (url) avatarUrl = url;
       }
 
-      const { error } = await supabase.from("profiles").update({
-        full_name: formData.fullName,
-        username: formData.username,
-        bio: formData.bio,
-        location: formData.location,
-        website: formData.website,
-        avatar_url: avatarUrl,
-        is_online: privacy.showOnlineStatus,
-      }).eq("id", user.id);
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: formData.fullName,
+          username: formData.username,
+          bio: formData.bio,
+          location: formData.location,
+          website: formData.website,
+          avatar_url: avatarUrl,
+          is_online: privacy.showOnlineStatus,
+          hobbies: selectedHobbies,
+        })
+        .eq("id", user.id);
 
       if (error) throw error;
 
@@ -141,165 +165,331 @@ export default function SettingsPage() {
 
   const toggleHobby = (hobbyId: string) => {
     setSelectedHobbies((prev) =>
-      prev.includes(hobbyId) ? prev.filter((h) => h !== hobbyId) : [...prev, hobbyId]
+      prev.includes(hobbyId)
+        ? prev.filter((h) => h !== hobbyId)
+        : [...prev, hobbyId]
     );
   };
 
-  const Toggle = ({ value, onChange }: { value: boolean; onChange: () => void }) => (
-    <button onClick={onChange}
-      className={`relative w-12 h-6 rounded-full transition-colors ${value ? "bg-indigo-600" : "bg-gray-300 dark:bg-gray-600"}`}>
-      <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${value ? "translate-x-6" : "translate-x-0.5"}`} />
+  const Toggle = ({
+    value,
+    onChange,
+  }: {
+    value: boolean;
+    onChange: () => void;
+  }) => (
+    <button
+      type="button"
+      onClick={onChange}
+      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 ${
+        value ? "bg-violet-600" : "bg-gray-200 dark:bg-gray-700"
+      }`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+          value ? "translate-x-5" : "translate-x-0"
+        }`}
+      />
     </button>
   );
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Settings</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your account and preferences</p>
+      <div className="max-w-4xl mx-auto space-y-6 pb-12">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-100 dark:border-gray-800">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+              Account Settings
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Manage your creator portfolio, notifications, and application preferences
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSave}
+              isLoading={isSaving}
+              className="gap-2 shadow-xs"
+            >
+              <Save className="w-4 h-4" /> Save Changes
+            </Button>
+          </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="lg:w-48 flex-shrink-0">
-            <div className="flex lg:flex-col gap-1 overflow-x-auto">
-              {tabs.map((tab) => (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${activeTab === tab.id
-                    ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
-                    : "text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800"
-                    }`}>
-                  <tab.icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              ))}
+        {/* Layout: Sidebar Tabs + Content Panel */}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Tabs Sidebar */}
+          <div className="md:w-56 shrink-0">
+            <div className="flex md:flex-col gap-1.5 overflow-x-auto p-1 rounded-2xl bg-gray-100/70 dark:bg-gray-900/50">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap text-left ${
+                      isActive
+                        ? "bg-white text-violet-700 shadow-xs dark:bg-gray-800 dark:text-violet-300"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-white/50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800/40"
+                    }`}
+                  >
+                    <tab.icon
+                      className={`w-4 h-4 ${
+                        isActive
+                          ? "text-violet-600 dark:text-violet-400"
+                          : "text-gray-400"
+                      }`}
+                    />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
+          {/* Panel Content */}
           <div className="flex-1 space-y-6">
             {activeTab === "profile" && (
               <>
-                <Card>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Profile Information</h2>
+                {/* Profile Card */}
+                <Card className="p-6 space-y-6">
+                  <div>
+                    <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                      Public Profile
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      This information is displayed publicly on your creator page
+                    </p>
+                  </div>
 
                   {/* Avatar Upload */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="relative">
+                  <div className="flex items-center gap-5 p-4 rounded-2xl bg-gray-50/70 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                    <div className="relative group cursor-pointer">
                       {avatarPreview || user?.avatar ? (
                         <img
                           src={avatarPreview || user?.avatar}
                           alt="Avatar"
-                          className="w-20 h-20 rounded-full object-cover ring-4 ring-indigo-100"
+                          className="w-20 h-20 rounded-2xl object-cover ring-4 ring-white dark:ring-gray-900 shadow-md transition-transform group-hover:scale-105"
                         />
                       ) : (
-                        <Avatar src={user?.avatar} name={user?.fullName} size="xl" />
+                        <Avatar
+                          src={user?.avatar}
+                          name={user?.fullName}
+                          size="xl"
+                          className="w-20 h-20 rounded-2xl ring-4 ring-white dark:ring-gray-900 shadow-md"
+                        />
                       )}
                       <label
                         htmlFor="avatar-upload"
-                        className="absolute bottom-0 right-0 p-1.5 bg-indigo-600 rounded-full text-white hover:bg-indigo-700 transition-colors cursor-pointer">
+                        className="absolute -bottom-1 -right-1 p-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl shadow-md transition-colors cursor-pointer"
+                        title="Upload photo"
+                      >
                         <Camera className="w-3.5 h-3.5" />
                       </label>
                     </div>
-                    <div>
+
+                    <div className="space-y-1">
                       <label
                         htmlFor="avatar-upload"
-                        className="text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer">
-                        Change Avatar
+                        className="text-sm font-bold text-violet-600 hover:text-violet-700 dark:text-violet-400 cursor-pointer inline-flex items-center gap-1.5"
+                      >
+                        <span>Upload new photo</span>
                       </label>
-                      <p className="text-xs text-gray-400 mt-1">JPG, PNG. Max 5MB.</p>
+                      <p className="text-xs text-gray-400">
+                        Recommended: Square JPG or PNG, at least 400x400px (Max 5MB)
+                      </p>
                       {avatarFile && (
-                        <p className="text-xs text-emerald-500 mt-1">✓ New avatar selected</p>
+                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5" /> Ready to save: {avatarFile.name}
+                        </p>
                       )}
                     </div>
+
                     <input
                       ref={avatarInputRef}
                       type="file"
                       accept="image/*"
                       onChange={handleAvatarSelect}
-                      style={{ display: "none" }}
+                      className="hidden"
                       id="avatar-upload"
                     />
                   </div>
 
+                  {/* Form fields */}
                   <div className="space-y-4">
-                    <Input id="fullName" label="Full Name" value={formData.fullName}
-                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
-                    <Input id="username" label="Username" value={formData.username}
-                      onChange={(e) => setFormData({ ...formData, username: e.target.value })} />
-                    <div className="space-y-1.5">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bio</label>
-                      <textarea value={formData.bio}
-                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                        rows={3}
-                        className="w-full rounded-xl border border-gray-200 bg-white p-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        placeholder="Tell us about yourself..." />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Input
+                        id="fullName"
+                        label="Full Name"
+                        value={formData.fullName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, fullName: e.target.value })
+                        }
+                      />
+                      <Input
+                        id="username"
+                        label="Username Handle"
+                        value={formData.username}
+                        onChange={(e) =>
+                          setFormData({ ...formData, username: e.target.value })
+                        }
+                      />
                     </div>
-                    <Input id="location" label="Location" value={formData.location}
-                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      placeholder="City, Country" />
-                    <Input id="website" label="Website" value={formData.website}
-                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                      placeholder="https://yoursite.com" />
+
+                    <div className="space-y-1.5">
+                      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        Creator Bio
+                      </label>
+                      <textarea
+                        value={formData.bio}
+                        onChange={(e) =>
+                          setFormData({ ...formData, bio: e.target.value })
+                        }
+                        rows={3}
+                        className="w-full rounded-xl border border-gray-200 bg-white p-3.5 text-sm focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
+                        placeholder="Tell the community what you're passionate about and what you love building..."
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Input
+                        id="location"
+                        label="Location"
+                        value={formData.location}
+                        onChange={(e) =>
+                          setFormData({ ...formData, location: e.target.value })
+                        }
+                        placeholder="San Francisco, CA or Remote"
+                      />
+                      <Input
+                        id="website"
+                        label="Personal Website / Portfolio"
+                        value={formData.website}
+                        onChange={(e) =>
+                          setFormData({ ...formData, website: e.target.value })
+                        }
+                        placeholder="https://yoursite.com"
+                      />
+                    </div>
                   </div>
                 </Card>
 
-                <Card>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Your Hobbies</h2>
-                  <p className="text-sm text-gray-500 mb-4">Select the hobbies you are passionate about</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {HOBBIES.map((hobby) => (
-                      <button key={hobby.id} type="button" onClick={() => toggleHobby(hobby.id)}>
-                        <Badge variant={selectedHobbies.includes(hobby.id) ? "primary" : "default"}>
-                          {hobby.name}
-                        </Badge>
-                      </button>
-                    ))}
-                    {/* Custom hobbies */}
-                    {selectedHobbies.filter(h => !HOBBIES.find(hb => hb.id === h)).map((custom) => (
-                      <button key={custom} type="button" onClick={() => toggleHobby(custom)}>
-                        <Badge variant="primary">
-                          ✨ {custom} ×
-                        </Badge>
-                      </button>
-                    ))}
+                {/* Hobbies / Passions Card */}
+                <Card className="p-6 space-y-5">
+                  <div>
+                    <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                      <span>Passions & Interests</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 font-semibold">
+                        {selectedHobbies.length} selected
+                      </span>
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Our AI uses these affinities to match you with compatible collaborators and recommended projects
+                    </p>
                   </div>
+
+                  <div className="flex flex-wrap gap-2 max-h-56 overflow-y-auto p-1">
+                    {HOBBIES.map((hobby) => {
+                      const isSelected = selectedHobbies.includes(hobby.id);
+                      return (
+                        <button
+                          key={hobby.id}
+                          type="button"
+                          onClick={() => toggleHobby(hobby.id)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                            isSelected
+                              ? "bg-violet-600 text-white shadow-xs"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                          }`}
+                        >
+                          {isSelected && <Check className="w-3 h-3" />}
+                          <span>{hobby.name}</span>
+                        </button>
+                      );
+                    })}
+
+                    {/* Custom hobbies */}
+                    {selectedHobbies
+                      .filter((h) => !HOBBIES.find((hb) => hb.id === h))
+                      .map((custom) => (
+                        <button
+                          key={custom}
+                          type="button"
+                          onClick={() => toggleHobby(custom)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-violet-600 text-white shadow-xs"
+                        >
+                          <Check className="w-3 h-3" />
+                          <span>✨ {custom} &times;</span>
+                        </button>
+                      ))}
+                  </div>
+
                   {/* Add custom hobby */}
-                  <div className="flex gap-2 mt-2">
+                  <div className="flex gap-2">
                     <input
                       type="text"
                       value={customHobby}
                       onChange={(e) => setCustomHobby(e.target.value)}
-                      placeholder="Add your own hobby..."
-                      className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      placeholder="Add a specialized hobby (e.g. Generative AI)..."
+                      className="flex-1 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs sm:text-sm focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && customHobby.trim()) {
                           if (!selectedHobbies.includes(customHobby.trim())) {
-                            setSelectedHobbies((prev) => [...prev, customHobby.trim()]);
+                            setSelectedHobbies((prev) => [
+                              ...prev,
+                              customHobby.trim(),
+                            ]);
                           }
                           setCustomHobby("");
                         }
                       }}
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="secondary"
+                      size="sm"
                       onClick={() => {
-                        if (customHobby.trim() && !selectedHobbies.includes(customHobby.trim())) {
-                          setSelectedHobbies((prev) => [...prev, customHobby.trim()]);
+                        if (
+                          customHobby.trim() &&
+                          !selectedHobbies.includes(customHobby.trim())
+                        ) {
+                          setSelectedHobbies((prev) => [
+                            ...prev,
+                            customHobby.trim(),
+                          ]);
                         }
                         setCustomHobby("");
                       }}
-                      className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-xl hover:bg-indigo-700 transition-colors">
-                      Add
-                    </button>
+                      className="gap-1 px-3 text-xs"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add
+                    </Button>
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">Press Enter or click Add to add a custom hobby</p>
                 </Card>
 
-                <div className="flex items-center justify-between">
-                  <Button variant="primary" onClick={handleSave} isLoading={isSaving}>
-                    <Save className="w-4 h-4" /> Save Changes
+                {/* Bottom Action Footer */}
+                <div className="flex items-center justify-between pt-2">
+                  <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    isLoading={isSaving}
+                    className="gap-2 shadow-xs"
+                  >
+                    <Save className="w-4 h-4" /> Save Profile Changes
                   </Button>
-                  <Button variant="danger" size="sm" onClick={() => { logout(); window.location.href = "/"; }}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      logout();
+                      window.location.href = "/";
+                    }}
+                    className="gap-2 text-rose-600 border-rose-200 hover:bg-rose-50 dark:border-rose-900/40 dark:hover:bg-rose-950/20"
+                  >
                     <LogOut className="w-4 h-4" /> Sign Out
                   </Button>
                 </div>
@@ -307,52 +497,115 @@ export default function SettingsPage() {
             )}
 
             {activeTab === "appearance" && (
-              <Card>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Appearance</h2>
+              <Card className="p-6 space-y-6">
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                    Display & Theme
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Customize your interface look and animation behavior
+                  </p>
+                </div>
+
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                    <div className="flex items-center gap-3">
-                      {theme === "dark" ? <Moon className="w-5 h-5 text-indigo-500" /> : <Sun className="w-5 h-5 text-orange-500" />}
+                  <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-2.5 rounded-xl bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300">
+                        {theme === "dark" ? (
+                          <Moon className="w-5 h-5" />
+                        ) : (
+                          <Sun className="w-5 h-5" />
+                        )}
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">Theme</p>
-                        <p className="text-sm text-gray-500">Current: {theme === "dark" ? "Dark Mode" : "Light Mode"}</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                          Dark Mode
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Currently using {theme === "dark" ? "Dark Theme" : "Light Theme"}
+                        </p>
                       </div>
                     </div>
                     <Toggle value={theme === "dark"} onChange={toggleTheme} />
                   </div>
-                  <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800">
-                    <div className="flex items-center gap-3">
-                      <Smartphone className="w-5 h-5 text-gray-500" />
+
+                  <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/80 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center gap-3.5">
+                      <div className="p-2.5 rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <Smartphone className="w-5 h-5" />
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">Reduce Animations</p>
-                        <p className="text-sm text-gray-500">Minimize motion effects</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                          Smooth Transitions
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Enable hardware-accelerated animations across feed
+                        </p>
                       </div>
                     </div>
-                    <Toggle value={false} onChange={() => { }} />
+                    <Toggle value={true} onChange={() => {}} />
                   </div>
                 </div>
               </Card>
             )}
 
             {activeTab === "notifications" && (
-              <Card>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Notification Preferences</h2>
-                <div className="space-y-4">
+              <Card className="p-6 space-y-6">
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                    Notification Preferences
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Choose what alerts and activities you want to receive
+                  </p>
+                </div>
+
+                <div className="space-y-3">
                   {[
-                    { key: "likes" as const, label: "Likes", desc: "When someone likes your post" },
-                    { key: "comments" as const, label: "Comments", desc: "When someone comments on your post" },
-                    { key: "newFollowers" as const, label: "New Followers", desc: "When someone follows you" },
-                    { key: "messages" as const, label: "Messages", desc: "When you receive a direct message" },
-                    { key: "mentions" as const, label: "Mentions", desc: "When someone mentions you" },
+                    {
+                      key: "likes" as const,
+                      label: "Post Appreciations & Likes",
+                      desc: "When someone likes or bookmarks your project posts",
+                    },
+                    {
+                      key: "comments" as const,
+                      label: "Discussion & Feedback",
+                      desc: "When someone leaves a comment on your milestones",
+                    },
+                    {
+                      key: "newFollowers" as const,
+                      label: "New Network Connections",
+                      desc: "When someone follows your creator profile",
+                    },
+                    {
+                      key: "messages" as const,
+                      label: "Direct Inquiries",
+                      desc: "When you receive a direct collaboration message",
+                    },
+                    {
+                      key: "mentions" as const,
+                      label: "Mentions & Project Tags",
+                      desc: "When someone mentions @yourhandle in a discussion",
+                    },
                   ].map((item) => (
-                    <div key={item.key} className="flex items-center justify-between">
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800/70 hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-colors"
+                    >
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">{item.label}</p>
-                        <p className="text-sm text-gray-500">{item.desc}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          {item.label}
+                        </p>
+                        <p className="text-xs text-gray-500">{item.desc}</p>
                       </div>
                       <Toggle
                         value={notifications[item.key]}
-                        onChange={() => setNotifications((prev) => ({ ...prev, [item.key]: !prev[item.key] }))}
+                        onChange={() =>
+                          setNotifications((prev) => ({
+                            ...prev,
+                            [item.key]: !prev[item.key],
+                          }))
+                        }
                       />
                     </div>
                   ))}
@@ -361,58 +614,109 @@ export default function SettingsPage() {
             )}
 
             {activeTab === "privacy" && (
-              <Card>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Privacy Settings</h2>
-                <div className="space-y-4">
+              <Card className="p-6 space-y-6">
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                    Privacy & Safeguards
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Control visibility and manage account security
+                  </p>
+                </div>
+
+                <div className="space-y-3">
                   {[
-                    { key: "privateProfile" as const, label: "Private Profile", desc: "Only followers can see your posts" },
-                    { key: "showOnlineStatus" as const, label: "Show Online Status", desc: "Let others see when you are active" },
-                    { key: "allowFriendRequests" as const, label: "Allow Friend Requests", desc: "Anyone can send you requests" },
+                    {
+                      key: "privateProfile" as const,
+                      label: "Private Profile",
+                      desc: "Only approved followers can view your project blueprints and posts",
+                    },
+                    {
+                      key: "showOnlineStatus" as const,
+                      label: "Show Online Presence",
+                      desc: "Display active green indicator when you are exploring Passionverse",
+                    },
+                    {
+                      key: "allowFriendRequests" as const,
+                      label: "Direct Collaboration Inquiries",
+                      desc: "Allow creators from outside your circle to message you",
+                    },
                   ].map((item) => (
-                    <div key={item.key} className="flex items-center justify-between">
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between p-3.5 rounded-2xl border border-gray-100 dark:border-gray-800/70"
+                    >
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">{item.label}</p>
-                        <p className="text-sm text-gray-500">{item.desc}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                          {item.label}
+                        </p>
+                        <p className="text-xs text-gray-500">{item.desc}</p>
                       </div>
                       <Toggle
                         value={privacy[item.key]}
                         onChange={() => {
-                          setPrivacy((prev) => ({ ...prev, [item.key]: !prev[item.key] }));
+                          setPrivacy((prev) => ({
+                            ...prev,
+                            [item.key]: !prev[item.key],
+                          }));
                           if (item.key === "showOnlineStatus") {
-                            supabase.from("profiles").update({
-                              is_online: !privacy.showOnlineStatus,
-                            }).eq("id", user?.id || "");
+                            supabase
+                              .from("profiles")
+                              .update({
+                                is_online: !privacy.showOnlineStatus,
+                              })
+                              .eq("id", user?.id || "");
                           }
                         }}
                       />
                     </div>
                   ))}
+                </div>
 
-                  <hr className="border-gray-100 dark:border-gray-800" />
-
-                  {/* Delete Account */}
-                  <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/10">
-                    <h3 className="font-medium text-red-600 dark:text-red-400">Danger Zone</h3>
-                    <p className="text-sm text-red-500 mt-1">Permanently delete your account and all data</p>
-                    {!showDeleteConfirm ? (
-                      <Button variant="danger" size="sm" className="mt-3"
-                        onClick={() => setShowDeleteConfirm(true)}>
-                        <Trash2 className="w-4 h-4" /> Delete Account
-                      </Button>
-                    ) : (
-                      <div className="mt-3 space-y-2">
-                        <p className="text-sm font-medium text-red-600">Are you sure? This cannot be undone!</p>
-                        <div className="flex gap-2">
-                          <Button variant="danger" size="sm" isLoading={isDeleting} onClick={handleDeleteAccount}>
-                            Yes, Delete Everything
-                          </Button>
-                          <Button variant="secondary" size="sm" onClick={() => setShowDeleteConfirm(false)}>
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                {/* Danger Zone */}
+                <div className="mt-8 p-5 rounded-2xl border border-rose-200 bg-rose-50/60 dark:bg-rose-950/20 dark:border-rose-900/40">
+                  <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400 font-bold text-sm">
+                    <AlertTriangle className="w-4 h-4" />
+                    <span>Danger Zone</span>
                   </div>
+                  <p className="text-xs text-rose-600/90 dark:text-rose-400/80 mt-1">
+                    Permanently delete your account, posts, and creator profile. This action cannot be undone.
+                  </p>
+                  {!showDeleteConfirm ? (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="mt-4 gap-2 text-xs"
+                      onClick={() => setShowDeleteConfirm(true)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete Account
+                    </Button>
+                  ) : (
+                    <div className="mt-4 space-y-2 p-3.5 rounded-xl bg-white/80 dark:bg-gray-900/80 border border-rose-200 dark:border-rose-900/50">
+                      <p className="text-xs font-bold text-rose-600">
+                        Confirm Account Deletion? All posts and messages will be permanently erased.
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          isLoading={isDeleting}
+                          onClick={handleDeleteAccount}
+                          className="text-xs"
+                        >
+                          Confirm & Delete Everything
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setShowDeleteConfirm(false)}
+                          className="text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Card>
             )}
